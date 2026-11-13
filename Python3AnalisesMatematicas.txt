@@ -1,0 +1,1012 @@
+Estatística Básica
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+from scipy.stats import norm, t, chi2, f
+
+# Dados de exemplo
+dados = [12, 15, 18, 22, 25, 28, 30, 35, 38, 42, 45, 48, 50, 55, 60]
+
+# Medidas de tendência central
+media = np.mean(dados)
+mediana = np.median(dados)
+moda = stats.mode(dados, keepdims=False).mode
+
+# Medidas de dispersão
+variancia = np.var(dados, ddof=1)  # ddof=1 para amostra
+desvio_padrao = np.std(dados, ddof=1)
+desvio_medio_absoluto = np.mean(np.abs(dados - media))
+
+# Quartis
+q1 = np.percentile(dados, 25)
+q2 = mediana
+q3 = np.percentile(dados, 75)
+
+# Coeficiente de variação
+cv = desvio_padrao / media * 100
+
+print(f"Média: {media:.2f}")
+print(f"Mediana: {mediana:.2f}")
+print(f"Moda: {moda}")
+print(f"Variância: {variancia:.2f}")
+print(f"Desvio Padrão: {desvio_padrao:.2f}")
+print(f"Q1: {q1}, Q2: {q2}, Q3: {q3}")
+print(f"CV: {cv:.2f}%")
+
+Distribuições de Probabilidade
+
+import matplotlib.pyplot as plt
+from scipy.stats import norm, t, chi2, f, binom, poisson, expon
+
+# Distribuição Normal
+x = np.linspace(-4, 4, 100)
+pdf_normal = norm.pdf(x, loc=0, scale=1)
+cdf_normal = norm.cdf(x, loc=0, scale=1)
+
+# Probabilidades
+p_menos_1 = norm.cdf(-1, loc=0, scale=1)
+p_entre_1_e_2 = norm.cdf(2) - norm.cdf(1)
+
+# Distribuição t de Student
+t_pdf = t.pdf(x, df=10)
+
+# Distribuição Qui-Quadrado
+x_chi2 = np.linspace(0, 20, 100)
+chi2_pdf = chi2.pdf(x_chi2, df=5)
+
+# Distribuição F
+x_f = np.linspace(0, 5, 100)
+f_pdf = f.pdf(x_f, dfn=10, dfd=5)
+
+# Distribuição Binomial
+n, p = 10, 0.5
+k = np.arange(0, n+1)
+binom_pmf = binom.pmf(k, n, p)
+
+# Distribuição de Poisson
+lam = 5
+k_poisson = np.arange(0, 15)
+poisson_pmf = poisson.pmf(k_poisson, lam)
+
+# Visualização
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+
+axes[0, 0].plot(x, pdf_normal, label='PDF')
+axes[0, 0].plot(x, cdf_normal, label='CDF')
+axes[0, 0].set_title('Distribuição Normal')
+axes[0, 0].legend()
+
+axes[0, 1].plot(x, t_pdf)
+axes[0, 1].set_title('Distribuição t (df=10)')
+
+axes[0, 2].plot(x_chi2, chi2_pdf)
+axes[0, 2].set_title('Distribuição Qui-Quadrado (df=5)')
+
+axes[1, 0].plot(x_f, f_pdf)
+axes[1, 0].set_title('Distribuição F (10, 5)')
+
+axes[1, 1].plot(k, binom_pmf, 'o-')
+axes[1, 1].set_title('Distribuição Binomial (n=10, p=0.5)')
+
+axes[1, 2].plot(k_poisson, poisson_pmf, 'o-')
+axes[1, 2].set_title('Distribuição Poisson (λ=5)')
+
+plt.tight_layout()
+plt.show()
+
+Testes de Hipótese
+
+# Teste t para uma amostra
+dados_amostra = [22, 25, 28, 30, 35, 38, 42, 45, 48, 50]
+media_pop = 30
+
+t_stat, p_value = stats.ttest_1samp(dados_amostra, media_pop)
+print(f"Teste t - Estatística: {t_stat:.4f}, p-valor: {p_value:.4f}")
+
+# Teste t para duas amostras independentes
+amostra1 = [22, 25, 28, 30, 35]
+amostra2 = [38, 42, 45, 48, 50, 55, 60]
+
+t_stat2, p_value2 = stats.ttest_ind(amostra1, amostra2, equal_var=False)
+print(f"Teste t (duas amostras) - Estatística: {t_stat2:.4f}, p-valor: {p_value2:.4f}")
+
+# Teste t para amostras pareadas
+antes = [70, 75, 80, 85, 90]
+depois = [75, 80, 85, 90, 95]
+
+t_stat3, p_value3 = stats.ttest_rel(antes, depois)
+print(f"Teste t (pareado) - Estatística: {t_stat3:.4f}, p-valor: {p_value3:.4f}")
+
+# Teste de ANOVA
+grupo1 = [20, 22, 25, 28, 30]
+grupo2 = [35, 38, 40, 42, 45]
+grupo3 = [50, 55, 58, 60, 65]
+
+f_stat, p_value_anova = stats.f_oneway(grupo1, grupo2, grupo3)
+print(f"ANOVA - Estatística F: {f_stat:.4f}, p-valor: {p_value_anova:.4f}")
+
+# Teste Qui-Quadrado
+observados = [30, 25, 20, 15, 10]
+esperados = [20, 20, 20, 20, 20]
+
+chi2_stat, p_value_chi2, dof, expected = stats.chi2_contingency(
+    np.array([observados, esperados]).T
+)
+print(f"Qui-Quadrado - Estatística: {chi2_stat:.4f}, p-valor: {p_value_chi2:.4f}")
+
+
+Regressão Linear
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_squared_error
+from scipy import stats
+
+# Dados de exemplo
+x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).reshape(-1, 1)
+y = np.array([2, 4, 5, 7, 8, 10, 12, 14, 15, 18])
+
+# Regressão Linear
+modelo = LinearRegression()
+modelo.fit(x, y)
+
+# Coeficientes
+intercepto = modelo.intercept_
+coeficiente = modelo.coef_[0]
+
+# Predições
+y_pred = modelo.predict(x)
+
+# Métricas
+r2 = r2_score(y, y_pred)
+mse = mean_squared_error(y, y_pred)
+rmse = np.sqrt(mse)
+
+# Intervalos de confiança
+residuos = y - y_pred
+erro_padrao = np.sqrt(np.sum(residuos**2) / (len(x) - 2))
+incerteza_coef = erro_padrao / np.sqrt(np.sum((x - np.mean(x))**2))
+
+print(f"Equação: y = {coeficiente:.4f}x + {intercepto:.4f}")
+print(f"R²: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+print(f"Erro padrão do coeficiente: {incerteza_coef:.4f}")
+
+# Visualização
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, label='Dados observados')
+plt.plot(x, y_pred, color='red', label='Regressão linear')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.title('Regressão Linear')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+
+# Dados múltiplas variáveis
+data = {
+    'y': [10, 12, 15, 18, 20, 22, 25, 28, 30, 35],
+    'x1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'x2': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    'x3': [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+}
+
+df = pd.DataFrame(data)
+
+# Separar variáveis
+X = df[['x1', 'x2', 'x3']]
+y = df['y']
+
+# Regressão múltipla
+modelo_multi = LinearRegression()
+modelo_multi.fit(X, y)
+
+# Coeficientes
+intercepto_multi = modelo_multi.intercept_
+coeficientes_multi = modelo_multi.coef_
+
+# Predições
+y_pred_multi = modelo_multi.predict(X)
+
+# Métricas
+r2_multi = r2_score(y, y_pred_multi)
+mse_multi = mean_squared_error(y, y_pred_multi)
+
+print(f"Equação: y = {intercepto_multi:.4f} + {coeficientes_multi[0]:.4f}x1 + {coeficientes_multi[1]:.4f}x2 + {coeficientes_multi[2]:.4f}x3")
+print(f"R²: {r2_multi:.4f}")
+
+# Criar DataFrame com resultados
+resultados = pd.DataFrame({
+    'Observado': y,
+    'Previsto': y_pred_multi,
+    'Residuo': y - y_pred_multi
+})
+print(resultados)
+
+Análise de Componentes Principais (PCA)
+
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Dados multivariados
+X = np.array([
+    [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7],
+    [6, 7, 8], [7, 8, 9], [8, 9, 10], [9, 10, 11], [10, 11, 12]
+])
+
+# Padronizar dados
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Aplicar PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# Componentes principais
+componentes = pca.components_
+variancia_explicada = pca.explained_variance_ratio_
+
+print("Componentes Principais:")
+print(componentes)
+print(f"Variância explicada: {variancia_explicada}")
+print(f"Variância acumulada: {np.sum(variancia_explicada):.4f}")
+
+# Visualização
+plt.figure(figsize=(10, 6))
+plt.scatter(X_pca[:, 0], X_pca[:, 1], alpha=0.7)
+plt.xlabel(f'PC1 ({variancia_explicada[0]:.2%} da variância)')
+plt.ylabel(f'PC2 ({variancia_explicada[1]:.2%} da variância)')
+plt.title('PCA - Análise de Componentes Principais')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+Séries Temporais
+
+from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# Dados de série temporal
+dates = pd.date_range(start='2023-01-01', periods=100, freq='D')
+valores = np.cumsum(np.random.randn(100)) + 100  # Random walk
+
+ts = pd.Series(valores, index=dates)
+
+# Teste de estacionariedade (Dickey-Fuller)
+def testar_estacionariedade(ts):
+    resultado = adfuller(ts, autolag='AIC')
+    print(f"Estação Dickey-Fuller: {resultado[0]:.4f}")
+    print(f"p-valor: {resultado[1]:.4f}")
+    print(f"Valores críticos:")
+    for valor, criticos in resultado[4].items():
+        print(f"\t{valor}: {criticos:.4f}")
+    
+    if resultado[1] <= 0.05:
+        print("Série é estacionária")
+    else:
+        print("Série não é estacionária")
+
+testar_estacionariedade(ts)
+
+# Decomposição da série temporal
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+decomposicao = seasonal_decompose(ts, model='additive', period=30)
+tendencia = decomposicao.trend
+sazonalidade = decomposicao.seasonal
+residuo = decomposicao.resid
+
+# Visualização
+fig, axes = plt.subplots(4, 1, figsize=(12, 12))
+axes[0].plot(ts)
+axes[0].set_title('Série Original')
+axes[1].plot(tendencia)
+axes[1].set_title('Tendência')
+axes[2].plot(sazonalidade)
+axes[2].set_title('Sazonalidade')
+axes[3].plot(residuo)
+axes[3].set_title('Resíduo')
+plt.tight_layout()
+plt.show()
+
+# Previsão com ARIMA
+modelo_arima = ARIMA(ts, order=(1, 1, 1))
+ajustado = modelo_arima.fit()
+previsao = ajustado.forecast(steps=10)
+
+print("Previsão para os próximos 10 períodos:")
+print(previsao)
+
+Análise de Correlação
+
+# Matriz de correlação
+np.random.seed(42)
+dados_correl = np.random.randn(100, 4)
+df_corr = pd.DataFrame(dados_correl, columns=['A', 'B', 'C', 'D'])
+
+matriz_corr = df_corr.corr()
+print("Matriz de Correlação:")
+print(matriz_corr)
+
+# Correlação de Pearson
+corr_pearson, p_pearson = stats.pearsonr(df_corr['A'], df_corr['B'])
+print(f"\nCorrelação de Pearson (A, B): {corr_pearson:.4f}, p-valor: {p_pearson:.4f}")
+
+# Correlação de Spearman
+corr_spearman, p_spearman = stats.spearmanr(df_corr['A'], df_corr['B'])
+print(f"Correlação de Spearman (A, B): {corr_spearman:.4f}, p-valor: {p_spearman:.4f}")
+
+# Correlação de Kendall
+corr_kendall, p_kendall = stats.kendalltau(df_corr['A'], df_corr['B'])
+print(f"Correlação de Kendall (A, B): {corr_kendall:.4f}, p-valor: {p_kendall:.4f}")
+
+# Visualização da matriz de correlação
+plt.figure(figsize=(10, 8))
+mascara = np.triu(np.ones_like(matriz_corr, dtype=bool))
+sns.heatmap(matriz_corr, mask=mascara, annot=True, cmap='coolwarm', 
+            center=0, square=True, fmt='.2f')
+plt.title('Matriz de Correlação')
+plt.show()
+
+Análise de Agrupamento (Clustering)
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.datasets import make_blobs
+
+# Gerar dados
+X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+
+# K-Means
+kmeans = KMeans(n_clusters=4, random_state=0)
+rótulos = kmeans.fit_predict(X)
+centroides = kmeans.cluster_centers_
+
+# Avaliar clustering
+silhueta = silhouette_score(X, rótulos)
+print(f"Score de Silhueta: {silhueta:.4f}")
+
+# Visualização
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.scatter(X[:, 0], X[:, 1], c=y_true, s=50, cmap='viridis', alpha=0.6)
+plt.title('Dados Originais (cores verdadeiras)')
+plt.colorbar(label='Cluster')
+
+plt.subplot(1, 2, 2)
+plt.scatter(X[:, 0], X[:, 1], c=rótulos, s=50, cmap='viridis', alpha=0.6)
+plt.scatter(centroides[:, 0], centroides[:, 1], marker='*', s=200, 
+            c='red', label='Centroides')
+plt.title('K-Means Clustering')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Determinar número ótimo de clusters (Método do Cotovelo)
+inertia = []
+K_range = range(1, 11)
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=0)
+    kmeans.fit(X)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(10, 6))
+plt.plot(K_range, inertia, 'bo-')
+plt.xlabel('Número de Clusters (k)')
+plt.ylabel('Inércia')
+plt.title('Método do Cotovelo')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+Cálculo Numérico
+
+from scipy import integrate, optimize, linalg
+
+# Integração numérica
+def f(x):
+    return np.sin(x) + np.cos(x)
+
+# Integrais definidas
+integral, erro = integrate.quad(f, 0, np.pi)
+print(f"Integral de sin(x) + cos(x) de 0 a π: {integral:.6f} (erro: {erro:.2e})")
+
+# Integrais múltiplas
+def f2(x, y):
+    return x * y
+
+integral2, erro2 = integrate.dblquad(f2, 0, 1, lambda x: 0, lambda x: 1)
+print(f"Integral dupla: {integral2:.6f}")
+
+# Otimização
+def objetivo(x):
+    return x**2 + 4*np.sin(x)
+
+resultado = optimize.minimize(objetivo, x0=2)
+print(f"Otimização - Mínimo em x = {resultado.x[0]:.4f}, f(x) = {resultado.fun:.4f}")
+
+# Resolver equações diferenciais
+from scipy.integrate import solve_ivp
+
+def ode_system(t, y):
+    return [y[1], -y[0]]  # y'' + y = 0
+
+sol = solve_ivp(ode_system, [0, 10], [1, 0], t_eval=np.linspace(0, 10, 100))
+
+# Álgebra linear
+A = np.array([[1, 2], [3, 4]])
+b = np.array([5, 6])
+
+# Resolver sistema linear
+x_sol = linalg.solve(A, b)
+print(f"Solução do sistema: {x_sol}")
+
+# Autovalores e autovetores
+autovalores, autovetores = linalg.eig(A)
+print(f"Autovalores: {autovalores}")
+print(f"Autovetores:\n{autovetores}")
+
+# Decomposição SVD
+U, s, Vt = linalg.svd(A)
+print(f"Valores singulares: {s}")
+
+Estatística Descritiva Avançada
+
+# Dados para análise estatística
+np.random.seed(42)
+dados = np.random.normal(100, 15, 1000)
+
+# Estatísticas descritivas completas
+descritivas = stats.describe(dados)
+print(f"Mínimo: {descritivas.minmax[0]:.2f}")
+print(f"Máximo: {descritivas.minmax[1]:.2f}")
+print(f"Amplitude: {descritivas.range:.2f}")
+print(f"Média: {descritivas.mean:.2f}")
+print(f"Variância: {descritivas.variance:.2f}")
+print(f"Desvio padrão: {np.sqrt(descritivas.variance):.2f}")
+print(f"Assimetria: {descritivas.skewness:.4f}")
+print(f"Kurtose: {descritivas.kurtosis:.4f}")
+
+# Quartis e percentis
+quartis = np.percentile(dados, [25, 50, 75])
+print(f"Quartis: Q1={quartis[0]:.2f}, Q2={quartis[1]:.2f}, Q3={quartis[2]:.2f}")
+
+# Regra de Tukey para outliers
+Q1, Q3 = quartis[0], quartis[2]
+IQR = Q3 - Q1
+limite_inferior = Q1 - 1.5 * IQR
+limite_superior = Q3 + 1.5 * IQR
+
+outliers = dados[(dados < limite_inferior) | (dados > limite_superior)]
+print(f"Outliers detectados: {len(outliers)}")
+
+# Visualização com boxplot
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 3, 1)
+plt.hist(dados, bins=30, alpha=0.7, color='skyblue', edgecolor='black')
+plt.title('Histograma')
+plt.xlabel('Valor')
+plt.ylabel('Frequência')
+
+plt.subplot(1, 3, 2)
+plt.boxplot(dados)
+plt.title('Boxplot')
+plt.ylabel('Valor')
+
+plt.subplot(1, 3, 3)
+stats.probplot(dados, dist="norm", plot=plt)
+plt.title('Q-Q Plot')
+plt.ylabel('Quantis teóricos')
+plt.xlabel('Quantis amostrais')
+
+plt.tight_layout()
+plt.show()
+
+Análise de Sobrevivência (Survival Analysis)
+
+from lifelines import KaplanMeierFitter, CoxPHFitter
+import pandas as pd
+
+# Dados de exemplo
+tempo_sobrevivencia = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
+eventos = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]  # 1=morte, 0=censura
+
+# Estimador de Kaplan-Meier
+kmf = KaplanMeierFitter()
+kmf.fit(tempo_sobrevivencia, event_observed=eventos)
+
+# Curva de sobrevivência
+kmf.plot_survival_function()
+plt.title('Curva de Sobrevivência - Kaplan-Meier')
+plt.xlabel('Tempo')
+plt.ylabel('Probabilidade de Sobrevivência')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# Análise de regressão de Cox
+# Dados com covariáveis
+data_cox = pd.DataFrame({
+    'tempo': tempo_sobrevivencia,
+    'evento': eventos,
+    'idade': [45, 52, 38, 61, 55, 42, 68, 51, 59, 63, 47, 70, 55, 65, 72],
+    'tratamento': [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+})
+
+# Ajustar modelo de Cox
+cph = CoxPHFitter()
+cph.fit(data_cox, duration_col='tempo', event_col='evento')
+
+# Resumo do modelo
+print(cph.summary)
+
+# Prever sobrevivência
+previsao = cph.predict_survival_function(data_cox.iloc[:5])
+print("Previsões de sobrevivência para primeiros 5 pacientes:")
+print(previsao)
+
+Análise de Séries Temporais com Prophet
+
+from prophet import Prophet
+import pandas as pd
+
+# Dados de exemplo
+dates = pd.date_range('2022-01-01', periods=365, freq='D')
+valores = 100 + np.cumsum(np.random.randn(365)) + 50*np.sin(np.arange(365) * 2*np.pi/365)
+
+df_prophet = pd.DataFrame({
+    'ds': dates,
+    'y': valores
+})
+
+# Criar modelo Prophet
+modelo = Prophet()
+modelo.fit(df_prophet)
+
+# Fazer previsões
+futuro = modelo.make_future_dataframe(periods=30)
+previsao = modelo.predict(futuro)
+
+# Visualização
+fig = modelo.plot(previsao)
+fig.set_size_inches(12, 6)
+plt.title('Previsão com Prophet')
+plt.show()
+
+# Componentes da previsão
+fig2 = modelo.plot_components(previsao)
+plt.show()
+
+Distribuições de Probabilidade
+
+from scipy.stats import norm, t, chi2, f, binom, poisson
+
+# Distribuição Normal
+x = np.linspace(-4, 4, 100)
+pdf_normal = norm.pdf(x, loc=0, scale=1)
+cdf_normal = norm.cdf(x, loc=0, scale=1)
+
+# Probabilidades
+p_menos_1 = norm.cdf(-1, loc=0, scale=1)
+p_entre_1_e_2 = norm.cdf(2) - norm.cdf(1)
+
+# Distribuição t de Student
+t_pdf = t.pdf(x, df=10)
+
+# Distribuição Qui-Quadrado
+x_chi2 = np.linspace(0, 20, 100)
+chi2_pdf = chi2.pdf(x_chi2, df=5)
+
+# Distribuição Binomial
+n, p = 10, 0.5
+k = np.arange(0, n+1)
+binom_pmf = binom.pmf(k, n, p)
+
+# Distribuição de Poisson
+lam = 5
+k_poisson = np.arange(0, 15)
+poisson_pmf = poisson.pmf(k_poisson, lam)
+
+Testes de Hipótese
+
+# Teste t para uma amostra
+dados_amostra = [22, 25, 28, 30, 35, 38, 42, 45, 48, 50]
+media_pop = 30
+
+t_stat, p_value = stats.ttest_1samp(dados_amostra, media_pop)
+print(f"Teste t - Estatística: {t_stat:.4f}, p-valor: {p_value:.4f}")
+
+# Teste t para duas amostras independentes
+amostra1 = [20, 22, 25, 28, 30]
+amostra2 = [35, 38, 40, 42, 45]
+
+t_stat2, p_value2 = stats.ttest_ind(amostra1, amostra2, equal_var=False)
+print(f"Teste t (duas amostras) - Estatística: {t_stat2:.4f}, p-valor: {p_value2:.4f}")
+
+# Teste de ANOVA
+grupo1 = [20, 22, 25, 28, 30]
+grupo2 = [35, 38, 40, 42, 45]
+grupo3 = [50, 55, 58, 60, 65]
+
+f_stat, p_value_anova = stats.f_oneway(grupo1, grupo2, grupo3)
+print(f"ANOVA - Estatística F: {f_stat:.4f}, p-valor: {p_value_anova:.4f}")
+
+# Teste Qui-Quadrado
+observados = [30, 25, 20, 15, 10]
+esperados = [20, 20, 20, 20, 20]
+
+chi2_stat, p_value_chi2, dof, expected = stats.chi2_contingency(
+    np.array([observados, esperados]).T
+)
+print(f"Qui-Quadrado - Estatística: {chi2_stat:.4f}, p-valor: {p_value_chi2:.4f}")
+
+
+Regressão Linear
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_squared_error
+
+# Dados de exemplo
+x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).reshape(-1, 1)
+y = np.array([2, 4, 5, 7, 8, 10, 12, 14, 15, 18])
+
+# Regressão Linear
+modelo = LinearRegression()
+modelo.fit(x, y)
+
+# Coeficientes
+intercepto = modelo.intercept_
+coeficiente = modelo.coef_[0]
+
+# Predições
+y_pred = modelo.predict(x)
+
+# Métricas
+r2 = r2_score(y, y_pred)
+mse = mean_squared_error(y, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"Equação: y = {coeficiente:.4f}x + {intercepto:.4f}")
+print(f"R²: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+
+Regressão Múltipla
+
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+
+# Dados múltiplas variáveis
+data = {
+    'y': [10, 12, 15, 18, 20, 22, 25, 28, 30, 35],
+    'x1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'x2': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    'x3': [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+}
+
+df = pd.DataFrame(data)
+
+# Separar variáveis
+X = df[['x1', 'x2', 'x3']]
+y = df['y']
+
+# Regressão múltipla
+modelo_multi = LinearRegression()
+modelo_multi.fit(X, y)
+
+# Coeficientes
+intercepto_multi = modelo_multi.intercept_
+coeficientes_multi = modelo_multi.coef_
+
+# Predições
+y_pred_multi = modelo_multi.predict(X)
+
+# Métricas
+r2_multi = r2_score(y, y_pred_multi)
+mse_multi = mean_squared_error(y, y_pred_multi)
+
+print(f"Equação: y = {intercepto_multi:.4f} + {coeficientes_multi[0]:.4f}x1 + {coeficientes_multi[1]:.4f}x2 + {coeficientes_multi[2]:.4f}x3")
+print(f"R²: {r2_multi:.4f}")
+
+Análise de Componentes Principais (PCA)
+
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Dados multivariados
+X = np.array([
+    [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7],
+    [6, 7, 8], [7, 8, 9], [8, 9, 10], [9, 10, 11], [10, 11, 12]
+])
+
+# Padronizar dados
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Aplicar PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# Componentes principais
+componentes = pca.components_
+variancia_explicada = pca.explained_variance_ratio_
+
+print("Componentes Principais:")
+print(componentes)
+print(f"Variância explicada: {variancia_explicada}")
+print(f"Variância acumulada: {np.sum(variancia_explicada):.4f}")
+
+
+Séries Temporais
+
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.arima_model import ARIMA
+import pandas as pd
+
+# Dados de série temporal
+dates = pd.date_range(start='2023-01-01', periods=100, freq='D')
+valores = np.cumsum(np.random.randn(100)) + 100  # Random walk
+
+ts = pd.Series(valores, index=dates)
+
+# Teste de estacionariedade (Dickey-Fuller)
+resultado = adfuller(ts, autolag='AIC')
+print(f"Estação Dickey-Fuller: {resultado[0]:.4f}")
+print(f"p-valor: {resultado[1]:.4f}")
+
+# Ajustar ARIMA
+modelo_arima = ARIMA(ts, order=(1, 1, 1))
+ajustado = modelo_arima.fit()
+previsao = ajustado.forecast(steps=10)
+
+print("Previsão para os próximos 10 períodos:")
+print(previsao)
+
+
+Análise de Correlação
+
+# Matriz de correlação
+np.random.seed(42)
+dados_correl = np.random.randn(100, 4)
+df_corr = pd.DataFrame(dados_correl, columns=['A', 'B', 'C', 'D'])
+
+matriz_corr = df_corr.corr()
+print("Matriz de Correlação:")
+print(matriz_corr)
+
+# Correlação de Pearson
+corr_pearson, p_pearson = stats.pearsonr(df_corr['A'], df_corr['B'])
+print(f"\nCorrelação de Pearson (A, B): {corr_pearson:.4f}, p-valor: {p_pearson:.4f}")
+
+# Correlação de Spearman
+corr_spearman, p_spearman = stats.spearmanr(df_corr['A'], df_corr['B'])
+print(f"Correlação de Spearman (A, B): {corr_spearman:.4f}, p-valor: {p_spearman:.4f}")
+
+
+Análise de Clustering
+
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.datasets import make_blobs
+
+# Gerar dados
+X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+
+# K-Means
+kmeans = KMeans(n_clusters=4, random_state=0)
+rótulos = kmeans.fit_predict(X)
+centroides = kmeans.cluster_centers_
+
+# Avaliar clustering
+silhueta = silhouette_score(X, rótulos)
+print(f"Score de Silhueta: {silhueta:.4f}")
+
+
+Cálculo Numérico
+
+from scipy import integrate, optimize, linalg
+
+# Integração numérica
+def f(x):
+    return np.sin(x) + np.cos(x)
+
+# Integrais definidas
+integral, erro = integrate.quad(f, 0, np.pi)
+print(f"Integral de sin(x) + cos(x) de 0 a π: {integral:.6f} (erro: {erro:.2e})")
+
+# Otimização
+def objetivo(x):
+    return x**2 + 4*np.sin(x)
+
+resultado = optimize.minimize(objetivo, x0=2)
+print(f"Otimização - Mínimo em x = {resultado.x[0]:.4f}, f(x) = {resultado.fun:.4f}")
+
+# Resolver equações diferenciais
+from scipy.integrate import solve_ivp
+
+def ode_system(t, y):
+    return [y[1], -y[0]]  # y'' + y = 0
+
+sol = solve_ivp(ode_system, [0, 10], [1, 0], t_eval=np.linspace(0, 10, 100))
+
+# Álgebra linear
+A = np.array([[1, 2], [3, 4]])
+b = np.array([5, 6])
+
+# Resolver sistema linear
+x_sol = linalg.solve(A, b)
+print(f"Solução do sistema: {x_sol}")
+
+# Autovalores e autovetores
+autovalores, autovetores = linalg.eig(A)
+print(f"Autovalores: {autovalores}")
+print(f"Autovetores:\n{autovetores}")
+
+
+Estatística Descritiva Avançada
+
+# Dados para análise estatística
+np.random.seed(42)
+dados = np.random.normal(100, 15, 1000)
+
+# Estatísticas descritivas completas
+descritivas = stats.describe(dados)
+print(f"Mínimo: {descritivas.minmax[0]:.2f}")
+print(f"Máximo: {descritivas.minmax[1]:.2f}")
+print(f"Amplitude: {descritivas.range:.2f}")
+print(f"Média: {descritivas.mean:.2f}")
+print(f"Variância: {descritivas.variance:.2f}")
+print(f"Desvio padrão: {np.sqrt(descritivas.variance):.2f}")
+print(f"Assimetria: {descritivas.skewness:.4f}")
+print(f"Kurtose: {descritivas.kurtosis:.4f}")
+
+# Quartis e percentis
+quartis = np.percentile(dados, [25, 50, 75])
+print(f"Quartis: Q1={quartis[0]:.2f}, Q2={quartis[1]:.2f}, Q3={quartis[2]:.2f}")
+
+# Regra de Tukey para outliers
+Q1, Q3 = quartis[0], quartis[2]
+IQR = Q3 - Q1
+limite_inferior = Q1 - 1.5 * IQR
+limite_superior = Q3 + 1.5 * IQR
+
+outliers = dados[(dados < limite_inferior) | (dados > limite_superior)]
+print(f"Outliers detectados: {len(outliers)}")
+
+Análise de Monte Carlo
+
+# Simulação de Monte Carlo para cálculo de π
+n_simulacoes = 100000
+
+# Gerar pontos aleatórios
+x = np.random.uniform(-1, 1, n_simulacoes)
+y = np.random.uniform(-1, 1, n_simulacoes)
+
+# Verificar se estão dentro do círculo
+dentro_circulo = x**2 + y**2 <= 1
+
+# Estimar π
+pi_estimado = 4 * np.sum(dentro_circulo) / n_simulacoes
+print(f"Estimativa de π: {pi_estimado:.6f}")
+
+# Simulação de option pricing (Black-Scholes)
+def black_scholes(S, K, T, r, sigma, option='call'):
+    d1 = (np.log(S/K) + (r + sigma**2/2)*T) / (sigma*np.sqrt(T))
+    d2 = d1 - sigma*np.sqrt(T)
+    
+    if option == 'call':
+        return S * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
+    else:
+        return K * np.exp(-r*T) * norm.cdf(-d2) - S * norm.cdf(-d1)
+
+# Parâmetros
+S = 100  # Preço atual
+K = 105  # Preço de exercise
+T = 1    # Tempo até vencimento (anos)
+r = 0.05 # Taxa de juros
+sigma = 0.2 # Volatilidade
+
+preco_call = black_scholes(S, K, T, r, sigma, 'call')
+preco_put = black_scholes(S, K, T, r, sigma, 'put')
+
+print(f"Preço da Opção Call: ${preco_call:.4f}")
+print(f"Preço da Opção Put: ${preco_put:.4f}")
+
+
+Análise de Otimização
+
+from scipy.optimize import minimize, linprog, differential_evolution
+
+# Otimização sem restrições
+def objetivo(x):
+    return (x[0] - 1)**2 + (x[1] - 2.5)**2
+
+resultado = minimize(objetivo, [2, 2])
+print(f"Otimização sem restrições: x = {resultado.x}, f(x) = {resultado.fun}")
+
+# Programação Linear
+c = [1, 1]
+A_ub = [[-1, 2]]
+b_ub = [1]
+A_eq = [[1, 1]]
+b_eq = [2]
+
+resultado_lin = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, 
+                        bounds=(0, None))
+print(f"Programação Linear: x = {resultado_lin.x}, f(x) = {resultado_lin.fun}")
+
+# Otimização global com differential evolution
+def objetivo_global(x):
+    return (x[0]**2 + x[1]**2) + 10*(1 - np.cos(x[0])) + 10*(1 - np.cos(x[1]))
+
+resultado_diff = differential_evolution(objetivo_global, bounds=[(-5, 5), (-5, 5)])
+print(f"Otimização Global: x = {resultado_diff.x}, f(x) = {resultado_diff.fun}")
+
+
+Análise de Sobrevivência (Survival Analysis)
+
+from lifelines import KaplanMeierFitter, CoxPHFitter
+import pandas as pd
+
+# Dados de exemplo
+tempo_sobrevivencia = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
+eventos = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]  # 1=morte, 0=censura
+
+# Estimador de Kaplan-Meier
+kmf = KaplanMeierFitter()
+kmf.fit(tempo_sobrevivencia, event_observed=eventos)
+
+# Análise de regressão de Cox
+data_cox = pd.DataFrame({
+    'tempo': tempo_sobrevivencia,
+    'evento': eventos,
+    'idade': [45, 52, 38, 61, 55, 42, 68, 51, 59, 63, 47, 70, 55, 65, 72],
+    'tratamento': [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+})
+
+# Ajustar modelo de Cox
+cph = CoxPHFitter()
+cph.fit(data_cox, duration_col='tempo', event_col='evento')
+
+# Resumo do modelo
+print(cph.summary)
+
+# Criar um exemplo completo de análise de dados
+np.random.seed(42)
+
+# Gerar dados
+idades = np.random.normal(40, 10, 1000)
+rendas = np.random.normal(5000, 1500, 1000)
+compras = (rendas > 4000).astype(int)
+
+# Análise estatística
+print("Estatísticas das Idades:")
+print(f"Média: {np.mean(idades):.2f}")
+print(f"Mediana: {np.median(idades):.2f}")
+print(f"Desvio Padrão: {np.std(idades):.2f}")
+
+print("\nEstatísticas das Rendas:")
+print(f"Média: {np.mean(rendas):.2f}")
+print(f"Mediana: {np.median(rendas):.2f}")
+print(f"Desvio Padrão: {np.std(rendas):.2f}")
+
+# Correlação
+correlacao = np.corrcoef(idades, rendas)[0, 1]
+print(f"\nCorrelação entre Idade e Renda: {correlacao:.4f}")
+
+# Distribuição de compras
+proporcao_compras = np.mean(compras)
+print(f"Proporção de compras: {proporcao_compras:.4f}")
+
+# Teste de hipótese
+compradores = rendas[compras == 1]
+nao_compradores = rendas[compras == 0]
+
+t_stat, p_value = stats.ttest_ind(compradores, nao_compradores)
+print(f"\nTeste t (compradores vs não compradores):")
+print(f"Estatística t: {t_stat:.4f}")
+print(f"P-valor: {p_value:.4f}")
+
