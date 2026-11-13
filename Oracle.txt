@@ -1,0 +1,968 @@
+Instalação e Configuração
+
+Verificar Versão do Oracle
+
+SELECT * FROM v$version;
+
+Conectar ao Banco de Dados
+
+-- Conectar como SYSDBA
+sqlplus / as sysdba
+
+-- Conectar com usuário específico
+sqlplus usuario/senha@host:porta/servicename
+
+-- Conectar via TNS
+sqlplus usuario/senha@TNS_ALIAS
+
+Gerenciamento de Usuários
+
+Criar Usuário
+
+CREATE USER junior IDENTIFIED BY senha123
+DEFAULT TABLESPACE users
+TEMPORARY TABLESPACE temp
+QUOTA 100M ON users;
+
+Conceder Permissões
+
+GRANT CONNECT TO junior;
+GRANT RESOURCE TO junior;
+GRANT CREATE TABLE, CREATE VIEW, CREATE SEQUENCE TO junior;
+GRANT SELECT, INSERT, UPDATE, DELETE ON tabela TO junior;
+
+Revogar Permissões
+
+REVOKE CONNECT FROM junior;
+REVOKE CREATE TABLE FROM junior;
+
+Alterar Senha
+
+ALTER USER junior IDENTIFIED BY nova_senha;
+
+Bloquear/Desbloquear Usuário
+
+ALTER USER junior ACCOUNT LOCK;
+ALTER USER junior ACCOUNT UNLOCK;
+
+Gerenciamento de Tabelas
+Criar Tabela
+
+CREATE TABLE usuarios (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    idade NUMBER CHECK (idade >= 0),
+    data_nascimento DATE,
+    ativo CHAR(1) DEFAULT 'S' CHECK (ativo IN ('S', 'N')),
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_idade CHECK (idade >= 18),
+    CONSTRAINT fk_departamento FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
+);
+
+Criar Tabela com Partitioning
+
+CREATE TABLE vendas (
+    id NUMBER,
+    produto VARCHAR2(100),
+    valor NUMBER(10,2),
+    data_venda DATE
+)
+PARTITION BY RANGE (data_venda) (
+    PARTITION vendas_2023 VALUES LESS THAN (TO_DATE('01/01/2024', 'DD/MM/YYYY')),
+    PARTITION vendas_2024 VALUES LESS THAN (TO_DATE('01/01/2025', 'DD/MM/YYYY')),
+    PARTITION vendas_2025 VALUES LESS THAN (MAXVALUE)
+);
+
+Modificar Tabela
+
+-- Adicionar coluna
+ALTER TABLE usuarios ADD COLUMN celular VARCHAR2(15);
+
+-- Modificar coluna
+ALTER TABLE usuarios MODIFY COLUMN nome VARCHAR2(120);
+
+-- Renomear coluna
+ALTER TABLE usuarios RENAME COLUMN celular TO telefone;
+
+-- Renomear tabela
+ALTER TABLE usuarios RENAME TO users;
+
+-- Adicionar constraint
+ALTER TABLE usuarios ADD CONSTRAINT chk_email CHECK (email LIKE '%@%');
+
+-- Remover constraint
+ALTER TABLE usuarios DROP CONSTRAINT chk_email;
+
+-- Remover coluna
+ALTER TABLE usuarios DROP COLUMN7777;
+
+-- Desativar constraint
+ALTER TABLE usuarios DISABLE CONSTRAINT chk_email;
+
+-- Ativar constraint
+ALTER TABLE usuarios ENABLE CONSTRAINT chk_email;
+
+Remover Tabela
+
+DROP TABLE usuarios;
+DROP TABLE usuarios PURGE;  -- Remove permanentemente
+
+Criar Índice
+
+CREATE INDEX idx_usuarios_nome ON usuarios(nome);
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE UNIQUE INDEX idx_usuarios_email_unique ON usuarios(email);
+
+-- Índice composto
+CREATE INDEX idx_usuarios_nome_sobrenome ON usuarios(nome, sobrenome);
+
+-- Índice baseado em função
+CREATE INDEX idx_usuos_lower_email ON usuarios(LOWER(email));
+
+Remover Índice
+
+DROP INDEX idx_usuarios_nome;
+
+Inserir Dados
+INSERT Básico
+
+INSERT INTO usuarios (id, nome, email, idade)
+VALUES (1, 'João Silva', 'joao@email.com', 30);
+
+-- INSERT múltiplo
+INSERT INTO usuarios (id, nome, email, idade) VALUES
+(2, 'Maria Santos', 'maria@email.com', 25),
+(3, 'Pedro Costa', 'pedro@email.com', 35),
+(4, 'Ana Oliveira', 'ana@email.com', 28);
+
+INSERT com Subquery
+
+INSERT INTO usuarios_backup 
+SELECT * FROM usuarios WHERE ativo = 'S';
+
+INSERT com Sequência
+
+CREATE SEQUENCE seq_usuarios
+START WITH 1
+INCREMENT BY 1
+MINVALUE 1
+MAXVALUE 99999999
+CYCLE
+CACHE 20;
+
+INSERT INTO usuarios (id, nome, email, idade)
+VALUES (seq_usuarios.NEXTVAL, 'Carlos', 'carlos@email.com', 40);
+
+UPDATE
+
+UPDATE usuarios 
+SET idade = 31, email = 'joao.novo@email.com'
+WHERE nome = 'João Silva';
+
+UPDATE usuarios 
+SET ativo = 'N'
+WHERE idade > 65;
+
+DELETE
+
+DELETE FROM usuarios WHERE id = 1;
+DELETE FROM usuarios WHERE ativo = 'N';
+
+Consultas Básicas
+
+SELECT
+
+-- Selecionar todas as colunas
+SELECT * FROM usuarios;
+
+-- Selecionar colunas específicas
+SELECT nome, email FROM usuarios;
+
+-- Selecionar com DISTINCT
+SELECT DISTINCT cidade FROM usuarios;
+
+-- Selecionar com LIMIT
+SELECT * FROM usuarios WHERE ROWNUM <= 10;
+
+-- Selecionar com OFFSET (Oracle 12c+)
+SELECT * FROM usuarios OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY;
+
+
+WHERE
+
+-- Condições
+SELECT * FROM usuarios WHERE idade >= 18;
+SELECT * FROM usuarios WHERE nome = 'João Silva';
+
+-- BETWEEN
+SELECT * FROM usuarios WHERE idade BETWEEN 18 AND 30;
+
+-- IN
+SELECT * FROM usuarios WHERE cidade IN ('São Paulo', 'Rio de Janeiro', 'Brasília');
+
+-- LIKE
+SELECT * FROM usuarios WHERE nome LIKE 'Jo%';
+SELECT * FROM usuarios WHERE nome LIKE '%Silva%';
+
+-- IS NULL
+SELECT * FROM usuarios WHERE email IS NULL;
+
+-- AND/OR
+SELECT * FROM usuarios WHERE idade >= 18 AND cidade = 'São Paulo';
+SELECT * FROM usuarios WHERE idade < 18 OR idade > 60;
+
+Funções de Agregação
+
+
+-- Contar
+SELECT COUNT(*) FROM usuarios;
+SELECT COUNT(email) FROM usuarios;
+
+-- Soma
+SELECT SUM(preco) FROM produtos;
+
+-- Média
+SELECT AVG(idade) FROM usuarios;
+
+-- Mínimo e Máximo
+SELECT MIN(preco), MAX(preco) FROM produtos;
+
+-- Desvio padrão
+SELECT STDDEV(preco) FROM produtos;
+
+-- Variância
+SELECT VARIANCE(preco) FROM produtos;
+
+
+GROUP BY e HAVING
+
+
+-- Agrupar
+SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade;
+
+-- Filtrar grupos
+SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade HAVING COUNT(*) > 5;
+
+-- Múltiplos agrupamentos
+SELECT cidade, sexo, COUNT(*) FROM usuarios 
+GROUP BY cidade, sexo 
+ORDER BY cidade, sexo;
+
+-- Múltiplas funções de agregação
+SELECT cidade, 
+       COUNT(*) as total,
+       AVG(idade) as idade_media,
+       MAX(idade) as idade_maxima
+FROM usuarios 
+GROUP BY cidade;
+
+ORDER BY
+
+
+-- Ordenar
+SELECT * FROM usuarios ORDER BY nome;
+SELECT * FROM usuarios ORDER BY idade DESC;
+SELECT * FROM usuarios ORDER BY idade DESC, nome ASC;
+
+-- Ordenar por expressão
+SELECT nome, idade FROM usuarios ORDER BY (idade * 2) DESC;
+
+JOINs
+
+
+-- INNER JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+INNER JOIN cidades c ON u.cidade_id = c.id;
+
+-- LEFT JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+LEFT JOIN cidades c ON u.cidade_id = c.id;
+
+-- RIGHT JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+RIGHT JOIN cidades c ON u.cidade_id = c.id;
+
+-- FULL OUTER JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+FULL OUTER JOIN cidades c ON u.cidade_id = c.id;
+
+-- CROSS JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+CROSS JOIN cidades c;
+
+-- SELF JOIN
+SELECT e1.nome as funcionario, e2.nome as chefe
+FROM funcionarios e1
+LEFT JOIN funcionarios e2 ON e1.chefe_id = e2.id;
+
+Subconsultas
+
+
+-- Subquery WHERE
+SELECT * FROM usuarios 
+WHERE idade > (SELECT AVG(idade) FROM usuarios);
+
+-- Subquery com IN
+SELECT * FROM usuarios 
+WHERE cidade_id IN (SELECT id FROM cidades WHERE populacao > 1000000);
+
+-- Subquery com EXISTS
+SELECT * FROM usuarios u
+WHERE EXISTS (SELECT 1 FROM pedidos p WHERE p.USUARIO_ID = u.id);
+
+-- Subquery no SELECT
+SELECT nome, idade, 
+       (SELECT AVG(idade) FROM usuarios) as media_geral
+FROM usuarios;
+
+-- Subquery no FROM
+SELECT * FROM (
+    SELECT nome, idade FROM usuarios WHERE idade >= 18
+) WHERE idade <= 30;
+
+
+Funções de Data/Hora
+
+
+-- Data atual
+SELECT SYSDATE FROM dual;
+SELECT CURRENT_DATE FROM dual;
+SELECT CURRENT_TIMESTAMP FROM dual;
+
+-- Extrair componentes
+SELECT EXTRACT(YEAR FROM SYSDATE) FROM dual;
+SELECT EXTRACT(MONTH FROM SYSDATE) FROM dual;
+SELECT EXTRACT(DAY FROM SYSDATE) FROM dual;
+
+-- Somar/subtrair tempo
+SELECT SYSDATE + 1 FROM dual;  -- Amanhã
+SELECT SYSDATE - 1 FROM dual;  -- Ontem
+SELECT SYSDATE + INTERVAL '1 hour' FROM dual;
+
+-- Diferença entre datas
+SELECT (SYSDATE - DATE '2023-01-01') FROM dual;  -- Dias
+SELECT MONTHS_BETWEEN(SYSDATE, DATE '2023-01-01') FROM dual;  -- Meses
+SELECT ADD_MONTHS(SYSDATE, 1) FROM dual;  -- Adicionar meses
+
+-- Formatando data
+SELECT TO_CHAR(SYSDATE, 'DD/MM/YYYY') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'HH24:MI:SS') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') FROM dual;
+
+-- Converter texto para data
+SELECT TO_DATE('15/01/2024', 'DD/MM/YYYY') FROM dual;
+
+
+Funções de Texto
+
+
+-- Concatenar
+SELECT nome || ' ' || sobrenome AS nome_completo FROM usuarios;
+
+-- Comprimento
+SELECT LENGTH(nome) FROM usuarios;
+
+-- Maiúscula/Minúscula
+SELECT UPPER(nome) FROM usuarios;
+SELECT LOWER(nome) FROM usuarios;
+SELECT INITCAP(nome) FROM usuarios;
+
+-- Extrair parte
+SELECT SUBSTR(nome, 1, 3) FROM usuarios;
+SELECT SUBSTR(nome, -3) FROM usuarios;  -- Últimos 3 caracteres
+
+-- Substituir
+SELECT REPLACE(nome, 'João', 'JOÃO') FROM usuarios;
+
+-- Remover espaços
+SELECT TRIM(nome) FROM usuarios;
+SELECT LTRIM(nome) FROM usuarios;
+SELECT RTRIM(nome) FROM usuarios;
+
+-- Encontrar posição
+SELECT INSTR(nome, 'Silva') FROM usuarios;
+
+-- Preencher
+SELECT LPAD(nome, 20, '*') FROM usuarios;
+SELECT RPAD(nome, 20, '*') FROM usuarios;
+
+
+Funções Numéricas
+
+
+-- Arredondamento
+SELECT ROUND(3.14159, 2) FROM dual;
+SELECT ROUND(3.14159) FROM dual;  -- Arredonda para inteiro
+
+-- Parte inteira/decimal
+SELECT TRUNC(3.14159, 2) FROM dual;
+SELECT TRUNC(3.14159) FROM dual;
+SELECT CEIL(3.14159) FROM dual;
+SELECT FLOOR(3.14159) FROM dual;
+
+-- Módulo
+SELECT MOD(10, 3) FROM dual;
+
+-- Raiz
+SELECT SQRT(16) FROM dual;
+
+-- Potência
+SELECT POWER(2, 3) FROM dual;
+
+-- Valor absoluto
+SELECT ABS(-10) FROM dual;
+
+-- Sinal
+SELECT SIGN(-10) FROM dual;
+SELECT SIGN(10) FROM dual;
+
+Funções de Conversão
+
+
+-- Texto para número
+SELECT CAST('123' AS NUMBER) FROM dual;
+SELECT TO_NUMBER('123') FROM dual;
+
+-- Número para texto
+SELECT TO_CHAR(123) FROM dual;
+SELECT TO_CHAR(123.456, '999,999.00') FROM dual;
+
+-- Data para texto
+SELECT TO_CHAR(SYSDATE, 'DD/MM/YYYY') FROM dual;
+
+-- Texto para data
+SELECT TO_DATE('15/01/2024', 'DD/MM/YYYY') FROM dual;
+
+
+Funções de Janela (Window Functions)
+
+
+-- ROW_NUMBER
+SELECT nome, idade, 
+       ROW_NUMBER() OVER (ORDER BY idade) AS posicao
+FROM usuarios;
+
+-- RANK
+SELECT nome, idade, 
+       RANK() OVER (ORDER BY idade) AS rank
+FROM usuarios;
+
+-- DENSE_RANK
+SELECT nome, idade, 
+       DENSE_RANK() OVER (ORDER BY idade) AS rank_denso
+FROM usuarios;
+
+-- LAG/LEAD
+SELECT nome, idade, 
+       LAG(idade) OVER (ORDER BY data_criacao) AS idade_anterior,
+       LEAD(idade) OVER (ORDER BY data_criacao) AS proxima_idade
+FROM usuarios;
+
+-- FIRST_VALUE/LAST_VALUE
+SELECT nome, idade,
+       FIRST_VALUE(idade) OVER (PARTITION BY cidade ORDER BY idade) AS menor_idade
+FROM usuarios;
+
+Funções de Agregação com OVER
+
+
+-- Média por grupo
+SELECT nome, cidade, idade,
+       AVG(idade) OVER (PARTITION BY cidade) AS media_idade_cidade
+FROM usuarios;
+
+-- Soma acumulada
+SELECT data, vendas,
+       SUM(vendas) OVER (ORDER BY data) AS vendas_acumuladas
+FROM vendas_diarias;
+
+-- Contagem acumulada
+SELECT nome, cidade,
+       COUNT(*) OVER (PARTITION BY cidade) AS total_cidade
+FROM usuarios;
+
+CTEs (Common Table Expressions)
+
+
+-- CTE simples
+WITH usuarios_ativos AS (
+    SELECT * FROM usuarios WHERE ativo = 'S'
+)
+SELECT COUNT(*) FROM usuarios_ativos;
+
+-- CTE múltipla
+WITH vendas_totais AS (
+    SELECT usuario_id, SUM(quantidade * prec) AS total
+    FROM pedidos 
+    GROUP BY usuario_id
+),
+media_vendas AS (
+    SELECT AVG(total) FROM vendas_totais
+)
+SELECT vt.*, (vt.total - mv.media) AS diff_media
+FROM vendas_totais vt, media_vendas mv;
+
+-- CTE recursiva
+WITH RECURSIVE contagem(n) AS (
+    SELECT 1
+    UNION ALL
+    SELECT n + 1 FROM contagem WHERE n < 10
+)
+SELECT * FROM contagem;
+
+
+Funções de Data Específicas do Oracle
+
+
+-- Intervalos
+SELECT SYSDATE + INTERVAL '1 year 2 months 3 days' FROM dual;
+SELECT SYSDATE + INTERVAL '1 week' FROM dual;
+
+-- Data/hora relativa
+SELECT SYSDATE - INTERVAL '1 day' AS ontem FROM dual;
+SELECT SYSDATE + INTERVAL '1 day' AS amanha FROM dual;
+
+-- Extrair partes da data
+SELECT TRUNC(SYSDATE, 'MM') AS mes_comeco FROM dual;
+SELECT TRUNC(SYSDATE, 'YYYY') AS ano_comeco FROM dual;
+SELECT NEXT_DAY(SYSDATE, 'MONDAY') AS proxima_segunda FROM dual;
+SELECT LAST_DAY(SYSDATE) AS Ultimo_dia_do_mes FROM dual;
+
+-- Gerar série de datas
+SELECT TRUNC(SYSDATE - ROWNUM, 'DD') AS data
+FROM dual
+CONNECT BY ROWNUM <= 30;
+
+Comandos de Gerenciamento do Banco
+
+
+-- Verificar versão
+SELECT * FROM v$version;
+
+-- Listar tabelas do usuário
+SELECT table_name FROM user_tables;
+
+-- Listar todas as tabelas
+SELECT owner, table_name FROM all_tables;
+
+-- Descrever tabela
+DESC usuarios;
+
+-- Verificar índice
+SELECT index_name, indexdef FROM user_indexes WHERE table_name = 'USUARIOS';
+
+-- Verificar constraints
+SELECT constraint_name, constraint_type, search_condition
+FROM user_constraints WHERE table_name = 'USUARIOS';
+
+-- Verificar sequências
+SELECT sequence_name, last_number FROM user_sequences;
+
+-- Verificar views
+SELECT view_name FROM user_views;
+
+-- Explicar query
+EXPLAIN PLAN FOR SELECT * FROM usuarios WHERE idade > 18;
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+Comandos de Transação
+
+
+-- Transação explícita
+BEGIN
+    UPDATE usuarios SET idade = 31 WHERE id = 1;
+    INSERT INTO auditoria (ação, data) VALUES ('UPDATE USUARIOS', SYSDATE);
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+-- SAVEPOINT
+BEGIN
+    UPDATE usuarios SET idade = 31 WHERE id = 1;
+    SAVEPOINT sp1;
+    UPDATE usuarios SET idade = 32 WHERE id = 2;
+    ROLLBACK TO sp1;
+    COMMIT;
+END;
+/
+
+Comandos de Controle de Acesso
+
+
+-- Conceder permissões
+GRANT SELECT, INSERT, UPDATE, DELETE ON usuarios TO junior;
+GRANT CREATE SESSION TO junior;
+
+-- Revogar permissões
+REVOKE SELECT ON usuarios FROM junior;
+
+-- Conceder role
+GRANT CONNECT TO junior;
+GRANT RESOURCE TO junior;
+
+-- Criar role
+CREATE ROLE role_desenvolvedor;
+GRANT CREATE TABLE, CREATE VIEW TO role_desenvolvedor;
+GRANT role_desenvolvedor TO junior;
+
+Exemplos Práticos
+
+Sistema de Usuários
+
+-- Criar tabela de usuários
+CREATE TABLE usuarios (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    idade NUMBER CHECK (idade >= 18),
+    ativo CHAR(1) DEFAULT 'S',
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Criar sequência
+CREATE SEQUENCE seq_usuarios START WITH 1 INCREMENT BY 1;
+
+-- Inserir dados
+INSERT INTO usuarios (id, nome, email, idade) VALUES
+(1, 'João Silva', 'joao@email.com', 30),
+(2, 'Maria Santos', 'maria@email.com', 25),
+(3, 'Pedro Costa', 'pedro@email.com', 35);
+
+-- Consulta com join
+SELECT u.id, u.nome, c.nome as cidade
+FROM usuarios u
+INNER JOIN cidades c ON u.cidade_id = c.id
+WHERE u.ativo = 'S'
+ORDER BY u.nome;
+
+
+Sistema de Vendas
+
+
+-- Criar tabelas
+CREATE TABLE produtos (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    prec NUMBER(10,2) NOT NULL
+);
+
+CREATE TABLE vendas (
+    id NUMBER PRIMARY KEY,
+    produto_id NUMBER,
+    quantidade NUMBER,
+    data_venda DATE DEFAULT SYSDATE,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id)
+);
+
+-- Consulta de vendas por produto
+SELECT p.nome as produto,
+       COUNT(v.id) as total_vendas,
+       SUM(v.quantidade) as total_quantidade,
+       SUM(v.quantidade * p.prec) as valor_total
+FROM produtos p
+LEFT JOIN vendas v ON p.id = v.produto_id
+GROUP BY p.id, p.nome
+ORDER BY valor_total DESC;
+
+Sistema Financeiro
+
+
+-- Tabela de transações
+CREATE TABLE transacoes (
+    id NUMBER PRIMARY KEY,
+    tipo VARCHAR2(20) CHECK (tipo IN ('ENTRADA', 'SAIDA')),
+    valor NUMBER(10,2) NOT NULL,
+    categoria VARCHAR2(50),
+    data_transacao DATE DEFAULT SYSDATE
+);
+
+-- Saldo atual
+SELECT 
+    SUM(CASE WHEN tipo = 'ENTRADA' THEN valor ELSE 0 END) as total_entradas,
+    SUM(CASE WHEN tipo = 'SAIDA' THEN valor ELSE 0 END) as total_saidas,
+    SUM(CASE WHEN tipo = 'ENTRADA' THEN valor ELSE -valor END) as saldo
+FROM transacoes;
+
+-- Transações por mês
+SELECT 
+    TO_CHAR(data_transacao, 'YYYY-MM') as mes,
+    COUNT(*) as total_transacoes,
+    SUM(CASE WHEN tipo = 'ENTRADA' THEN valor ELSE 0 END) as entradas,
+    SUM(CASE WHEN tipo = 'SAIDA' THEN valor ELSE 0 END) as saidas
+FROM transacoes
+GROUP BY TO_CHAR(data_transacao, 'YYYY-MM')
+ORDER BY mes;
+
+Sistema de Estoque
+
+
+-- Tabela de estoque
+CREATE TABLE estoque (
+    produto_id NUMBER PRIMARY KEY,
+    quantidade NUMBER DEFAULT 0,
+    ultima-atualização TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id)
+);
+
+-- Movimentações
+CREATE TABLE movimentacoes (
+    id NUMBER PRIMARY KEY,
+    produto_id NUMBER,
+    tipo VARCHAR2(20) CHECK (tipo IN ('ENTRADA', 'SAIDA')),
+    quantidade NUMBER NOT NULL,
+    data_movimento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id)
+);
+
+-- Atualizar estoque
+UPDATE estoque 
+SET quantidade = quantidade + (
+    SELECT CASE WHEN tipo = 'ENTRADA' THEN quantidade ELSE -quantidade END
+    FROM movimentacoes 
+    WHERE produto_id = :produto_id AND id = :movimento_id
+)
+WHERE produto_id = :produto_id;
+
+-- Relatório de estoque
+SELECT p.nome as produto,
+       e.quantidade as estoque atual,
+       COALESCE(SUM(CASE WHEN m.tipo = 'ENTRADA' THEN m.quantidade ELSE 0 END), 0) as entradas,
+       COALESCE(SUM(CASE WHEN m.tipo = 'SAIDA' THEN m.quantidade ELSE 0 END), 0) as saidas
+FROM produtos p
+LEFT JOIN estoque e ON p.id = e.produto_id
+LEFT JOIN movimentacoes m ON p.id = m.produto_id
+GROUP BY p.id, p.nome, e.quantidade;
+
+Sistema de RH
+
+
+-- Tabela de funcionarios
+CREATE TABLE funcionarios (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    cargo VARCHAR2(50),
+    departamento_id NUMBER,
+    data_contratacao DATE DEFAULT SYSDATE,
+    salário NUMBER(10,2),
+    FOREIGN KEY (departamento_id) REFERENCES departamentos(id)
+);
+
+-- Consulta de funcionarios por departamento
+SELECT d.nome as departamento,
+       COUNT(f.id) as total_funcionarios,
+       AVG(f.salário) as salário_medio,
+       MIN(f.salário) as salário_minimo,
+       MAX(f.salário) as salário_maximo
+FROM departamentos d
+LEFT JOIN funcionarios f ON d.id = f.departamento_id
+GROUP BY d.id, d.nome
+ORDER BY total_funcionarios DESC;
+
+-- Anos de empresa
+SELECT nome, 
+       EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM data_contratacao) as anos empresa
+FROM funcionarios;
+
+Sistema de Auditoria
+
+
+-- Tabela de auditoria
+CREATE TABLE auditoria (
+    id NUMBER PRIMARY KEY,
+    tabela VARCHAR2(50),
+    acao VARCHAR2(20),
+    registro_id NUMBER,
+    usuario VARCHAR2(50),
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dados_antigos CLOB,
+    dados_novos CLOB
+);
+
+-- Trigger de auditoria
+CREATE OR REPLACE TRIGGER trg_auditoria_usuaios
+AFTER UPDATE ON usuarios
+FOR EACH ROW
+BEGIN
+    INSERT INTO auditoria (tabela, acao, registro_id, usuario, dados_antigos, dados_novos)
+    VALUES ('USUARIOS', 'UPDATE', :OLD.id, USER, 
+            TO_CLOB('Nome: ' || :OLD.nome || ', Idade: ' || :OLD.idade),
+            TO_CLOB('Nome: ' || :NEW.nome || ', Idade: ' || :NEW.idade));
+END;
+/
+
+Funções de Série Temporal
+
+
+-- Análise de vendas por período
+SELECT 
+    TO_CHAR(data_venda, 'YYYY-MM') as periodo,
+    COUNT(*) as total_vendas,
+    SUM(quantidade * prec) as valor_total,
+    AVG(quantidade * prec) as ticket_medio
+FROM vendas v
+JOIN produtos p ON v.produto_id = p.id
+GROUP BY TO_CHAR(data_venda, 'YYYY-MM')
+ORDER BY periodo;
+
+-- Comparação com período anterior
+WITH vendas_periodo AS (
+    SELECT 
+        TO_CHAR(data_venda, 'YYYY-MM') as periodo,
+        SUM(quantidade * prec) as total
+    FROM vendas v
+    JOIN produtos p ON v.produto_id = p.id
+    GROUP BY TO_CHAR(data_venda, 'YYYY-MM')
+)
+SELECT 
+    vp.periodo,
+    vp.total as periodo atual,
+    LAG(vp.total) OVER (ORDER BY vp.periodo) as periodo_anterior,
+    ROUND((vp.total - LAG(vp.total) OVER (ORDER BY vp.periodo)) / 
+          LAG(vp.total) OVER (ORDER BY vp.periodo) * 100, 2) as variacao_percentual
+FROM vendas_periodo vp
+ORDER BY vp.periodo;
+
+Funções de Análise Espacial (Oracle Spatial)
+
+
+-- Criar tabela com dados espaciais
+CREATE TABLE lojas (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100),
+    localização SDO_GEOMETRY
+);
+
+-- Inserir dados espaciais
+INSERT INTO lojas (id, nome, localização) VALUES (
+    1, 
+    'Loja Centro', 
+    SDO_GEOMETRY(
+        2001,  -- Tipos de geometria: 2001=ponto, 2002=linha, 2003=polígono
+        8377,  -- SRID (Sistema de Referência de Coordenadas)
+        SDO_POINT_TYPE(-23.5, -46.6, NULL)  -- Coordenadas
+    )
+);
+
+-- Consulta espacial
+SELECT l1.nome as loja1, l2.nome as loja2,
+       SDO_GEOM.SDO_DISTANCE(l1.localização, l2.localização, 0.5) as distancia
+FROM lojas l1, lojas l2
+WHERE l1.id != l2.id
+  AND SDO_GEOM.SDO_DISTANCE(l1.localização, l2.localização, 0.5) < 1000;  -- 1km
+  
+
+Funções de Texto Avançadas
+
+-- Busca textual
+SELECT * FROM produtos 
+WHERE CONTém(description, 'notebook');
+
+-- Regex
+SELECT * FROM usuarios 
+WHERE REGEXP_LIKE(email, '^[a-z]+@[a-z]+\.[a-z]{2,}$');
+
+-- Similaridade de texto
+SELECT nome, 
+       UTL_MATCH edit_distance_similarity(nome, 'João') as similaridade
+FROM usuarios
+ORDER BY similaridade DESC;
+
+Funções de Criptografia
+
+-- Hash de senha
+SELECT DBMS_CRYPTO.HASH(UTL_I18N.STRING_TO_RAW('senha123'), DBMS_CRYPTO.HASH_SH1) FROM dual;
+
+-- Criptografia
+SELECT DBMS_CRYPTO.ENCRYPT(
+    UTL_I18N.STRING_TO_RAW('Dados sensíveis'),
+    DBMS_CRYPTO.ENCRYPT_AES128,
+    UTL_I18N.STRING_TO_RAW('chave1234567890')
+) FROM dual;
+
+Exemplos de Relatórios Complexos
+
+Relatório de Vendas com Análise de Tendência
+
+
+WITH vendas_diarias AS (
+    SELECT 
+        TRUNC(data_venda) as data,
+        SUM(quantidade * prec) as vendas
+    FROM vendas v
+    JOIN produtos p ON v.produto_id = p.id
+    GROUP BY TRUNC(data_venda)
+),
+media_movel AS (
+    SELECT 
+        data,
+        vendas,
+        AVG(vendas) OVER (ORDER BY data ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as media_movel_7dias
+    FROM vendas_diarias
+)
+SELECT 
+    data,
+    vendas,
+    media_movel_7dias,
+    ROUND((vendas - media_movel_7dias) / media_movel_7dias * 100, 2) as variacao_percentual
+FROM media_movel
+ORDER BY data;
+
+Análise de Customer Lifetime Value (CLV)
+
+WITH vendas_por_Cliente AS (
+    SELECT 
+        cliente_id,
+        COUNT(*) as total_compras,
+        SUM(quantidade * prec) as valor_total,
+        AVG(quantidade * prec) as valor_medio,
+        MIN(data_venda) as primeira_compra,
+        MAX(data_venda) as ultima_compra
+    FROM vendas v
+    JOIN produtos p ON v.produto_id = p.id
+    GROUP BY cliente_id
+)
+SELECT 
+    cliente_id,
+    total_compras,
+    valor_total,
+    valor_medio,
+    MONTHS_BETWEEN(ultima_compra, primeira_compra) + 1 as meses_comoCliente,
+    ROUND((valor_total / (MONTHS_BETWEEN(ultima_compra, primeira_compra) + 1)), 2) as clv_mensal
+FROM vendas_por_Cliente
+ORDER BY valor_total DESC;
+
+
+Dashboard Executivo
+
+
+-- KPIs principais
+SELECT 
+    (SELECT COUNT(*) FROM usuarios WHERE ativo = 'S') as usuarios_ativos,
+    (SELECT SUM(quantidade * prec) FROM vendas WHERE data_venda >= TRUNC(SYSDATE, 'MM')) as vendas_mes,
+    (SELECT COUNT(*) FROM pedidos WHERE status = 'PENDENTE') as pedidos_pendentes,
+    (SELECT AVG(quantidade * prec) FROM vendas WHERE data_venda >= TRUNC(SYSDATE, 'MM')) as ticket_medio;
+
+-- Vendas por produto (top 5)
+SELECT *
+FROM (
+    SELECT 
+        p.nome as produto,
+        SUM(v.quantidade * p.prec) as valor_total,
+        ROW_NUMBER() OVER (ORDER BY SUM(v.quantidade * p.prec) DESC) as rank
+    FROM produtos p
+    JOIN vendas v ON p.id = v.produto_id
+    WHERE v.data_venda >= ADD_MONTHS(SYSDATE, -3)
+    GROUP BY p.id, p.nome
+)
+WHERE rank <= 5;
+
