@@ -1,0 +1,452 @@
+Comandos Básicos de Consulta
+
+SELECT
+
+-- Selecionar todas as colunas
+SELECT * FROM tabela;
+
+-- Selecionar colunas específicas
+SELECT nome, idade FROM usuarios;
+
+-- Selecionar com DISTINCT
+SELECT DISTINCT cidade FROM usuarios;
+
+-- Selecionar com LIMIT
+SELECT * FROM usuarios LIMIT 10;
+
+-- Selecionar com OFFSET
+SELECT * FROM usuarios OFFSET 5 LIMIT 10;
+
+Operadores Diversas
+
+-- Comparação
+SELECT * FROM usuarios WHERE idade >= 18;
+SELECT * FROM usuarios WHERE nome = 'João';
+
+-- Lógicos
+SELECT * FROM usuarios WHERE idade >= 18 AND cidade = 'São Paulo';
+SELECT * FROM usuarios WHERE idade < 18 OR idade > 60;
+
+-- LIKE
+SELECT * FROM usuarios WHERE nome LIKE 'Jo%';  -- Começa com Jo
+SELECT * FROM usuarios WHERE nome LIKE '%ão';   -- Termina com ão
+SELECT * FROM usuarios WHERE nome LIKE '%ana%'; -- Contém ana
+
+-- BETWEEN
+SELECT * FROM usuarios WHERE idade BETWEEN 18 AND 30;
+
+-- IN
+SELECT * FROM usuarios WHERE cidade IN ('São Paulo', 'Rio de Janeiro', 'Brasília');
+
+-- IS NULL
+SELECT * FROM usuarios WHERE email IS NULL;
+
+Funções de Agregação
+
+-- Contar
+SELECT COUNT(*) FROM usuarios;
+SELECT COUNT(email) FROM usuarios;
+
+-- Soma
+SELECT SUM(preco) FROM produtos;
+
+-- Média
+SELECT AVG(idade) FROM usuarios;
+
+-- Mínimo e Máximo
+SELECT MIN(preco), MAX(preco) FROM produtos;
+
+GROUP BY e HAVING
+
+-- Agrupar
+SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade;
+
+-- Filtrar grupos
+SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade HAVING COUNT(*) > 5;
+
+-- Múltiplos agrupamentos
+SELECT cidade, sexo, COUNT(*) FROM usuarios 
+GROUP BY cidade, sexo 
+ORDER BY cidade, sexo;
+
+ORDER BY
+
+-- Ordenar
+SELECT * FROM usuarios ORDER BY nome;
+SELECT * FROM usuarios ORDER BY idade DESC;
+SELECT * FROM usuarios ORDER BY idade DESC, nome ASC;
+
+JOINs
+
+-- INNER JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+INNER JOIN cidades c ON u.cidade_id = c.id;
+
+-- LEFT JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+LEFT JOIN cidades c ON u.cidade_id = c.id;
+
+-- RIGHT JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+RIGHT JOIN cidades c ON u.cidade_id = c.id;
+
+-- FULL JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+FULL JOIN cidades c ON u.cidade_id = c.id;
+
+-- CROSS JOIN
+SELECT u.*, c.nome as cidade 
+FROM usuarios u 
+CROSS JOIN cidades c;
+
+Subconsultas
+
+-- Subquery WHERE
+SELECT * FROM usuarios 
+WHERE idade > (SELECT AVG(idade) FROM usuarios);
+
+-- Subquery com IN
+SELECT * FROM usuarios 
+WHERE cidade_id IN (SELECT id FROM cidades WHERE populacao > 1000000);
+
+-- Subquery com EXISTS
+SELECT * FROM usuarios u
+WHERE EXISTS (SELECT 1 FROM pedidos p WHERE pachtenencia = u.id);
+
+Funções de Data/Hora
+
+-- Data atual
+SELECT CURRENT_DATE;
+SELECT CURRENT_TIMESTAMP;
+SELECT NOW();
+
+-- Extrair componentes
+SELECT EXTRACT(YEAR FROM CURRENT_DATE);
+SELECT EXTRACT(MONTH FROM CURRENT_DATE);
+SELECT EXTRACT(DAY FROM CURRENT_DATE);
+
+-- Somar/subtrair tempo
+SELECT CURRENT_DATE + INTERVAL '1 day';
+SELECT CURRENT_DATE - INTERVAL '1 month';
+
+-- Diferença entre datas
+SELECT AGE(timestamp '2024-01-01', timestamp '2023-01-01');
+SELECT (CURRENT_DATE - DATE '2023-01-01');
+
+Funções de Texto
+
+-- Concatenar
+SELECT nome || ' ' || sobrenome AS nome_completo FROM usuarios;
+
+-- Comprimento
+SELECT LENGTH(nome) FROM usuarios;
+
+-- Maiúscula/Minúscula
+SELECT UPPER(nome) FROM usuarios;
+SELECT LOWER(nome) FROM usuarios;
+
+-- Extrair parte
+SELECT LEFT(nome, 3) FROM usuarios;
+SELECT RIGHT(nome, 3) FROM usuarios;
+SELECT SUBSTRING(nome FROM 2 FOR 5) FROM usuarios;
+
+-- Substituir
+SELECT REPLACE(nome, 'João', 'JOÃO') FROM usuarios;
+
+-- Remover espaços
+SELECT TRIM(nome) FROM usuarios;
+SELECT LTRIM(nome) FROM usuarios;
+SELECT RTRIM(nome) FROM usuarios;
+
+Funções Numéricas
+
+-- Arredondamento
+SELECT ROUND(preco, 2) FROM produtos;
+SELECT ROUND(preco) FROM produtos;
+
+-- Parte inteira/decimal
+SELECT FLOOR(preco) FROM produtos;
+SELECT CEIL(preco) FROM produtos;
+SELECT TRUNC(preco, 2) FROM produtos;
+
+-- Módulo
+SELECT MOD(10, 3);
+
+-- Raiz
+SELECT SQRT(16);
+
+-- Potência
+SELECT POWER(2, 3);
+
+-- Valor absoluto
+SELECT ABS(-10);
+
+-- Texto para número
+SELECT CAST(idade AS INTEGER) FROM usuarios;
+SELECT CAST(preco AS NUMERIC(10,2)) FROM produtos;
+
+-- Número para texto
+SELECT CAST(id AS VARCHAR) FROM usuarios;
+
+-- Data para texto
+SELECT TO_CHAR(CURRENT_DATE, 'DD/MM/YYYY');
+SELECT TO_CHAR(NOW(), 'HH24:MI:SS');
+
+-- Texto para data
+SELECT TO_DATE('15/01/2024', 'DD/MM/YYYY');
+SELECT TO_TIMESTAMP('15/01/2024 14:30:00', 'DD/MM/YYYY HH24:MI:SS');
+
+Comandos DDL (Definição de Dados)
+
+-- Criar tabela
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    idade INTEGER CHECK (idade >= 0),
+    data_nascimento DATE,
+    cidade_id INTEGER,
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cidade_id) REFERENCES cidades(id)
+);
+
+-- Adicionar coluna
+ALTER TABLE usuarios ADD COLUMN celular VARCHAR(15);
+
+-- Modificar coluna
+ALTER TABLE usuarios ALTER COLUMN nome VARCHAR(120);
+
+-- Renomear coluna
+ALTER TABLE usuarios RENAME COLUMN celular TO telefone;
+
+-- Renomear tabela
+ALTER TABLE usuarios RENAME TO users;
+
+-- Adicionar constraint
+ALTER TABLE usuarios ADD CONSTRAINT chk_idade_positiva CHECK (idade >= 0);
+
+-- Remover coluna
+ALTER TABLE usuarios DROP COLUMN7777;
+
+-- Criar índice
+CREATE INDEX idx usuarios_nome ON usuarios(nome);
+CREATE INDEX idx usuarios_email ON usuarios(email);
+
+-- Criar índice único
+CREATE UNIQUE INDEX idx usuarios_email_unique ON usuarios(email);
+
+Comandos DML (Manipulação de Dados)
+
+-- INSERT
+INSERT INTO usuarios (nome, email, idade) 
+VALUES ('João Silva', 'joao@email.com', 30);
+
+-- INSERT múltiplos
+INSERT INTO usuarios (nome, email, idade) VALUES
+('Maria Santos', 'maria@email.com', 25),
+('Pedro Costa', 'pedro@email.com', 35),
+('Ana Oliveira', 'ana@email.com', 28);
+
+-- INSERT com subquery
+INSERT INTO usuarios_backup 
+SELECT * FROM usuarios WHERE ativo = TRUE;
+
+-- UPDATE
+UPDATE usuarios SET idade = 31 WHERE nome = 'João Silva';
+
+UPDATE usuarios SET ativo = FALSE WHERE idade > 65;
+
+-- UPDATE com subquery
+UPDATE produtos SET prec = prec * 1.1 
+WHERE id IN (SELECT id FROM categorias WHERE nome = 'Eletrônicos');
+
+-- DELETE
+DELETE FROM usuarios WHERE id = 1;
+
+DELETE FROM usuarios WHERE ativo = FALSE;
+
+-- DELETE com subquery
+DELETE FROM pedidos WHERE usuario_id IN (
+    SELECT id FROM usuarios WHERE cidade = 'São Paulo'
+);
+
+Comandos de Controle
+
+-- Transação
+BEGIN;
+INSERT INTO usuarios (nome, email) VALUES ('Teste', 'teste@email.com');
+UPDATE usuarios SET idade = 25 WHERE email = 'teste@email.com';
+COMMIT;
+
+-- Rollback
+BEGIN;
+INSERT INTO usuarios (nome, email) VALUES ('Teste', 'teste@email.com');
+ROLLBACK;
+
+-- SAVEPOINT
+BEGIN;
+INSERT INTO usuarios (nome, email) VALUES ('João', 'joao@email.com');
+SAVEPOINT sp1;
+INSERT INTO usuarios (nome, email) VALUES ('Maria', 'maria@email.com');
+ROLLBACK TO sp1;
+COMMIT;
+
+Funções de Janela (Window Functions)
+
+-- ROW_NUMBER
+SELECT nome, idade, ROW_NUMBER() OVER (ORDER BY idade) AS posicao
+FROM usuarios;
+
+-- RANK
+SELECT nome, idade, RANK() OVER (ORDER BY idade) AS rank
+FROM usuarios;
+
+-- DENSE_RANK
+SELECT nome, idade, DENSE_RANK() OVER (ORDER BY idade) AS rank_denso
+FROM usuarios;
+
+-- LAG/LEAD
+SELECT nome, idade, 
+       LAG(idade) OVER (ORDER BY data_criacao) AS idade_anterior,
+       LEAD(idade) OVER (ORDER BY data_criacao) AS proxima_idade
+FROM usuarios;
+
+-- FIRST_VALUE/LAST_VALUE
+SELECT nome, idade,
+       FIRST_VALUE(idade) OVER (PARTITION BY cidade ORDER BY idade) AS menor_idade
+FROM usuarios;
+
+Funções de Agregação com OVER
+
+-- Média por grupo
+SELECT nome, cidade, idade,
+       AVG(idade) OVER (PARTITION BY cidade) AS media_idade_cidade
+FROM usuarios;
+
+-- Soma acumulada
+SELECT data, vendas,
+       SUM(vendas) OVER (ORDER BY data) AS vendas_acumuladas
+FROM vendas_diarias;
+
+CTEs (Common Table Expressions)
+
+-- CTE simples
+WITH usuarios_ativos AS (
+    SELECT * FROM usuarios WHERE ativo = TRUE
+)
+SELECT COUNT(*) FROM usuarios_ativos;
+
+-- CTE múltipla
+WITH vendas_totais AS (
+    SELECT usuario_id, SUM(quantidade * prec) AS total
+    FROM pedidos 
+    GROUP BY usuario_id
+),
+media_vendas AS (
+    SELECT AVG(total) FROM vendas_totais
+)
+SELECT vt.*, (vt.total - mv.media) AS diff_media
+FROM vendas_totais vt, media_vendas mv;
+
+Funções de Data Específicas do PostgreSQL
+
+-- Intervalos
+SELECT CURRENT_DATE + INTERVAL '1 year 2 months 3 days';
+SELECT CURRENT_DATE + INTERVAL '1 week';
+
+-- Data/hora relativa
+SELECT CURRENT_DATE - INTERVAL '1 day' AS ontem;
+SELECT CURRENT_DATE + INTERVAL '1 day' AS amanha;
+
+-- Extrair partes da data
+SELECT DATE_TRUNC('month', CURRENT_DATE) AS mes_comeco;
+SELECT DATE_TRUNC('year', CURRENT_DATE) AS ano_comeco;
+
+-- Gerar série de datas
+SELECT generate_series(
+    '2024-01-01'::date,
+    '2024-01-31'::date,
+    INTERVAL '1 day'
+);
+
+-- Idade exata
+SELECT AGE(timestamp '2024-01-15', timestamp '1990-03-20');
+
+-- Verificar versão
+SELECT version();
+
+-- Listar tabelas
+SELECT tablename FROM pg_tables WHERE schemaname = 'public';
+
+-- Descrever tabela
+\d tabela;
+
+-- Verificar índice
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'tabela';
+
+-- Explicar query
+EXPLAIN ANALYZE SELECT * FROM usuarios WHERE idade > 18;
+
+-- Verificar permissões
+SELECT grantee, privilege_type FROM information_schema.role_table_grants 
+WHERE table_name = 'minhatabela';
+
+Exemplo Completo
+
+
+-- Criar tabelas
+CREATE TABLE categorias (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE produtos (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    prec NUMERIC(10,2) NOT NULL,
+    categoria_id INTEGER,
+    ativo BOOLEAN DEFAULT TRUE,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+);
+
+-- Inserir dados
+INSERT INTO categorias (nome) VALUES ('Eletrônicos'), ('Livros'), ('Roupas');
+
+INSERT INTO produtos (nome, prec, categoria_id) VALUES
+('Smartphone', 899.99, 1),
+('Notebook', 2499.99, 1),
+('Livro SQL', 59.99, 2),
+('Camiseta', 29.99, 3);
+
+-- Consulta com JOIN e agregação
+SELECT c.nome AS categoria, 
+       COUNT(p.id) AS total_produtos,
+       AVG(p.prec) AS prec_medio,
+       SUM(p.prec) AS valor_total
+FROM categorias c
+LEFT JOIN produtos p ON c.id = p.categoria_id
+WHERE p.ativo = TRUE
+GROUP BY c.id, c.nome
+ORDER BY total_produtos DESC;
+
+-- Consulta com CTE
+WITH stats AS (
+    SELECT categoria_id, 
+           COUNT(*) as total,
+           AVG(prec) as media_prec
+    FROM produtos 
+    WHERE ativo = TRUE
+    GROUP BY categoria_id
+)
+SELECT c.nome, s.total, s.media_prec
+FROM categorias c
+JOIN stats s ON c.id = s.categoria_id
+ORDER BY s.total DESC;
+
+
