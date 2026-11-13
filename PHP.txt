@@ -1,0 +1,1026 @@
+Instalação e Configuração
+
+Verificar Instalação
+
+<?php
+// Verificar versão do PHP
+echo "Versão PHP: " . phpversion();
+
+// Verificar extensões carregadas
+phpinfo();
+?>
+
+
+Sintaxe Básica
+
+Primeiro Programa
+
+<?php
+echo "Olá, Mundo!";
+print("Hello World");
+
+// Variáveis
+$nome = "João";
+$idade = 30;
+$altura = 1.75;
+$ativo = true;
+
+echo "Nome: $nome, Idade: $idade";
+?>
+
+Comentários
+
+<?php
+// Comentário de uma linha
+# Comentário com #
+
+/*
+Comentário de múltiplas linhas
+pode ocupar várias linhas
+*/
+
+/**
+ * Comentário de documentação
+ * @param string $nome
+ */
+function saudacao($nome) {
+    return "Olá, $nome!";
+}
+?>
+
+
+Tipos de Dados
+
+<?php
+// Cadeia de caracteres (strings)
+$nome = "João Silva";
+$cidade = 'São Paulo';
+
+// Números inteiros
+$idade = 30;
+$quantidade = 100;
+
+// Números decimais (float/double)
+$altura = 1.75;
+$preco = 99.99;
+
+// Booleanos
+$ativo = true;
+$desativo = false;
+
+// Arrays
+$idades = [25, 30, 35];
+$persona = [
+    'nome' => 'Maria',
+    'idade' => 28,
+    'cidade' => 'Rio de Janeiro'
+];
+
+// Null
+$valor = null;
+
+// Verificar tipo de variável
+var_dump($nome);
+gettype($idade);
+?>
+
+Operadores
+
+Aritméticos
+
+<?php
+$a = 10;
+$b = 3;
+
+echo $a + $b; // 13
+echo $a - $b; // 7
+echo $a * $b; // 30
+echo $a / $b; // 3.33
+echo $a % $b; // 1 (resto da divisão)
+echo $a ** $b; // 1000 (potência)
+
+// Incremento/Decremento
+$a++; // 11
+++$a; // 12
+$b--; // 2
+--$b; // 1
+?>
+
+
+Comparação
+
+
+<?php
+$a = 10;
+$b = "10";
+$c = 10;
+
+// Comparação de valor
+var_dump($a == $b); // true
+var_dump($a == $c); // true
+
+// Comparação de tipo e valor
+var_dump($a === $b); // false (int vs string)
+var_dump($a === $c); // true
+
+// Comparação de !=
+var_dump($a != $b); // false
+var_dump($a !== $b); // true
+
+// Comparação maior/menor
+var_dump($a > 5); // true
+var_dump($a < 5); // false
+?>
+
+
+Lógicos
+
+
+<?php
+$a = true;
+$b = false;
+
+var_dump($a && $b); // false (AND)
+var_dump($a || $b); // true (OR)
+var_dump(!$a);      // false (NOT)
+
+// Operadores alternativos
+var_dump($a and $b); // false
+var_dump($a or $b);  // true
+
+// XOR (OU exclusivo)
+var_dump($a xor $b); // true (apenas um é true)
+?>
+
+
+Estruturas de Controle
+
+Condicionais
+
+
+<?php
+$idade = 20;
+
+// if/else
+if ($idade >= 18) {
+    echo "Maior de idade";
+} elseif ($idade >= 12) {
+    echo "Adolescente";
+} else {
+    echo "Criança";
+}
+
+// switch/case
+$cor = "azul";
+switch ($cor) {
+    case "vermelho":
+        echo "Vermelho";
+        break;
+    case "azul":
+        echo "Azul";
+        break;
+    case "verde":
+        echo "Verde";
+        break;
+    default:
+        echo "Cor não identificada";
+}
+
+// Operador ternário
+$nome = $idade >= 18 ? "Maior" : "Menor";
+echo $nome;
+?>
+
+Loops
+
+
+<?php
+// for
+for ($i = 0; $i < 10; $i++) {
+    echo "Número: $i\n";
+}
+
+// while
+$cont = 0;
+while ($cont < 5) {
+    echo "Contador: $cont\n";
+    $cont++;
+}
+
+// do-while
+$cont2 = 0;
+do {
+    echo "Do-While: $cont2\n";
+    $cont2++;
+} while ($cont2 < 5);
+
+// foreach
+$idades = [25, 30, 35];
+foreach ($idades as $idade) {
+    echo "Idade: $idade\n";
+}
+
+// foreach com key/value
+$persona = [
+    'nome' => 'Maria',
+    'idade' => 28
+];
+foreach ($persona as $chave => $valor) {
+    echo "$chave: $valor\n";
+}
+?>
+
+Funções
+
+Funções Básicas
+
+
+<?php
+// Função sem parâmetro
+function saudacao() {
+    return "Olá, Mundo!";
+}
+
+// Função com parâmetro
+function saudacaoNome($nome) {
+    return "Olá, $nome!";
+}
+
+// Função com parâmetro padrão
+function saudacaoPadrao($nome = "Visitante") {
+    return "Olá, $nome!";
+}
+
+// Função com múltiplos parâmetros
+function somar($a, $b) {
+    return $a + $b;
+}
+
+// Função com tipo de retorno (PHP 7+)
+function multiplicar(int $a, int $b): int {
+    return $a * $b;
+}
+
+// Função que retorna múltiplos valores
+function getMinMax($array) {
+    return [min($array), max($array)];
+}
+
+// Usando as funções
+echo saudacao();
+echo saudacaoNome("João");
+echo saudacaoPadrao();
+echo somar(5, 3);
+echo multiplicar(4, 5);
+
+$minMax = getMinMax([3, 1, 4, 1, 5]);
+echo "Min: {$minMax[0]}, Max: {$minMax[1]}";
+?>
+
+
+Funções Anônimas 
+
+
+<?php
+$saudacao = function($nome) {
+    return "Olá, $nome!";
+};
+
+echo $saudacao("Maria");
+
+// Arrow functions (PHP 7.4+)
+$dobrar = fn($x) => $x * 2;
+echo $dobrar(5);
+
+// Closure com use
+$nome = "João";
+$saudacao = function() use ($nome) {
+    return "Olá, $nome!";
+};
+echo $saudacao();
+?>
+
+
+Arrays
+Criar e Modificar Arrays
+
+
+<?php
+// Arrays indexados
+$idades = [25, 30, 35];
+
+// Arrays associativos
+$persona = [
+    'nome' => 'Maria',
+    'idade' => 28,
+    'cidade' => 'Rio de Janeiro'
+];
+
+// Adicionar elemento
+$idades[] = 40;
+$persona['estado'] = 'RJ';
+
+// Remover elemento
+unset($idades[0]);
+unset($persona['nome']);
+
+// Verificar se existe
+if (isset($persona['nome'])) {
+    echo "Nome existe";
+}
+
+// Verificar se vazio
+if (empty($idades)) {
+    echo "Array vazio";
+}
+
+// Comprimento do array
+echo count($idades);
+echo sizeof($persona);
+
+// Verificar se é array
+var_dump(is_array($idades));
+?>
+
+Operações com Arrays
+
+
+<?php
+$frutas = ['maçã', 'banana', 'laranja'];
+
+// Adicionar múltiplos elementos
+$frutas[] = 'uva';
+$frutas[] = 'morango';
+
+// Pegar último elemento
+$ultima = array_pop($frutas);
+
+// Pegar primeiro elemento
+$primeira = array_shift($frutas);
+
+// Unir arrays
+$salgados = ['coxinha', 'pastel'];
+$comidas = array_merge($frutas, $salgados);
+
+// Buscar no array
+$chave = array_search('banana', $frutas);
+if ($chave !== false) {
+    echo "Banana encontrada na posição $chave";
+}
+
+// Verificar se valor existe
+if (in_array('maçã', $frutas)) {
+    echo "Maçã está na lista";
+}
+
+// Ordenar
+sort($frutas); // Ordena numericamente
+rsort($frutas); // Ordena decrescentemente
+
+// Ordenar associativo por valor
+asort($persona); // Ordena por valor mantendo chaves
+arsort($persona); // Ordena decrescentemente
+
+// Ordenar por key
+ksort($persona);
+krsort($persona);
+?>
+
+Arrays Multidimensionais
+
+
+
+<?php
+// Array bidimensional
+$estudantes = [
+    [
+        'nome' => 'João',
+        'notas' => [7.0, 8.5, 9.0],
+        'media' => 8.17
+    ],
+    [
+        'nome' => 'Maria',
+        'notas' => [6.5, 7.0, 8.0],
+        'media' => 7.17
+    ]
+];
+
+// Acessar elemento
+echo $estudantes[0]['nome'];
+echo $estudantes[0]['notas'][1];
+
+// Iterar
+foreach ($estudantes as $estudante) {
+    echo $estudante['nome'] . ': ' . $estudante['media'] . "\n";
+}
+
+// Modificar
+$estudantes[1]['notas'][2] = 9.5;
+$estudantes[1]['media'] = (6.5 + 7.0 + 9.5) / 3;
+?>
+
+
+Entrada e Saída
+
+echo e print
+
+
+<?php
+// echo - pode receber múltiplos parâmetros
+echo "Olá, ";
+echo "Mundo!\n";
+
+// print - sempre retorna 1
+print "Texto\n";
+
+// Com variáveis
+$nome = "João";
+echo "Olá, $nome!\n";
+
+// Com concatenação
+echo "Olá, " . $nome . "!\n";
+
+// Com heredoc (PHP 5.3+)
+$texto = <<<EOT
+Olá, $nome!
+Este é um texto
+em múltiplas linhas.
+EOT;
+echo $texto;
+
+fgets para entrada
+
+
+
+<?php
+// Ler do teclado
+$nome = fgets(STDIN);
+echo "Você digitou: $nome";
+
+// trim para remover quebra de linha
+$nome = trim(fgets(STDIN));
+echo "Olá, $nome!";
+?>
+
+Tratamento de Exceções
+
+try/catch
+
+
+<?php
+function dividir($a, $b) {
+    if ($b == 0) {
+        throw new Exception("Divisão por zero não é permitida");
+    }
+    return $a / $b;
+}
+
+try {
+    $resultado = dividir(10, 0);
+    echo "Resultado: $resultado";
+} catch (Exception $e) {
+    echo "Erro: " . $e->getMessage();
+} finally {
+    echo "Isso sempre será executado";
+}
+
+// Exceções customizadas
+class CustomException extends Exception {
+    public function __construct($message, $code = 0, Exception $previous = null) {
+        parent::__construct($message, $code, $previous);
+    }
+    
+    public function __toString() {
+        return __CLASS__ . ": {$this->getMessage()}\n";
+    }
+}
+
+try {
+    throw new CustomException("Erro customizado");
+} catch (CustomException $e) {
+    echo $e;
+}
+?>
+
+Arquivos
+
+Ler e Escrever Arquivos
+
+
+<?php
+// Escrever em arquivo
+$arquivo = 'teste.txt';
+file_put_contents($arquivo, "Linha 1\nLinha 2\n");
+
+// Ler arquivo
+$conteudo = file_get_contents($arquivo);
+echo $conteudo;
+
+// Ler linha por linha
+$handle = fopen($arquivo, 'r');
+while (($linha = fgets($handle)) !== false) {
+    echo $linha;
+}
+fclose($handle);
+
+// Ler em array
+$linhas = file($arquivo);
+foreach ($linhas as $linha) {
+    echo $linha;
+}
+
+// Verificar se arquivo existe
+if (file_exists($arquivo)) {
+    echo "Arquivo existe";
+}
+
+// Apagar arquivo
+unlink($arquivo);
+
+// Criar diretório
+mkdir('diretorio");
+rmdir('diretorio');
+?>
+
+
+Trabalhando com Data e Hora
+
+
+<?php
+// Data atual
+$agora = time();
+echo date('d/m/Y H:i:s', $agora);
+
+// Criar data específica
+$data = strtotime('2024-01-15');
+echo date('d/m/Y', $data);
+
+// DateTime object (PHP 5.2+)
+$date = new DateTime();
+echo $date->format('d/m/Y H:i:s');
+
+// Modificar data
+$date->modify('+1 day');
+$date->add(new DateInterval('P1M')); // +1 month
+
+// Diferença entre datas
+$date1 = new DateTime('2024-01-15');
+$date2 = new DateTime('2024-02-15');
+$interval = $date1->diff($date2);
+echo $interval->format('%r%a dias');
+
+// Timezone
+$date->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+echo $date->format('d/m/Y H:i:s');
+?>
+
+PHP com Bancos de Dados
+
+MySQLi (Procedural)
+
+
+<?php
+$host = 'localhost';
+$user = 'usuario';
+$pass = 'senha';
+$db = 'banco_dados';
+
+// Conectar
+$conn = mysqli_connect($host, $user, $pass, $db);
+if (!$conn) {
+    die("Erro de conexão: " . Mysqli_connect_error());
+}
+
+// Consulta
+$sql = "SELECT * FROM usuarios WHERE ativo = 1";
+$resultado = mysqli_query($conn, $sql);
+
+// Buscar resultados
+while ($linha = mysqli_fetch_assoc($resultado)) {
+    echo $linha['nome'] . "\n";
+}
+
+// Liberar resultado
+mysqli_free_result($resultado);
+
+// Fechar conexão
+mysqli_close($conn);
+?>
+
+
+MySQLi (OOP)
+
+
+<?php
+$conn = new mysqli('localhost', 'usuario', 'senha', 'banco_dados');
+
+if ($conn->connect_error) {
+    die("Erro de conexão: " . $conn->connect_error);
+}
+
+$resultado = $conn->query("SELECT * FROM usuarios");
+
+while ($linha = $resultado->fetch_assoc()) {
+    echo $linha['nome'] . "\n";
+}
+
+$resultado->free();
+$conn->close();
+?>
+
+
+PDO
+
+
+<?php
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=banco_dados", 'usuario', 'senha');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Consulta preparada
+    $sql = "SELECT * FROM usuarios WHERE idade > :idade";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':idade', $idade);
+    $idade = 18;
+    $stmt->execute();
+    
+    while ($linha = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo $linha['nome'] . "\n";
+    }
+    
+} catch(PDOException $e) {
+    echo "Erro: " . $e->getMessage();
+}
+?>
+
+PHP com HTML
+Gerar HTML Dinâmico
+php
+<?php
+$produtos = [
+    ['nome' => 'Notebook', 'preco' => 2500],
+    ['nome' => 'Smartphone', 'preco' => 1200],
+    ['nome' => 'Tablet', 'preco' => 800]
+];
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Produtos</title>
+</head>
+<body>
+    <h1>Produtos</h1>
+    <ul>
+        <?php foreach ($produtos as $produto): ?>
+            <li>
+                <?php echo $produto['nome']; ?> - 
+                R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</body>
+</html>
+
+
+PHP com JavaScript
+Interagir com JavaScript
+
+<?php
+$dados = ['João', 'Maria', 'Pedro'];
+?>
+
+<script>
+// Dados do PHP
+var dados = <?php echo json_encode($dados); ?>;
+
+console.log(dados);
+for (var i = 0; i < dados.length; i++) {
+    console.log(dados[i]);
+}
+</script>
+
+
+PHP com Sessões
+
+
+<?php
+// Iniciar sessão
+session_start();
+
+// Usar variáveis de sessão
+$_SESSION['nome'] = 'João';
+$_SESSION['logado'] = true;
+
+// Verificar sessão
+if (isset($_SESSION['nome'])) {
+    echo "Olá, " . $_SESSION['nome'];
+}
+
+// Destruir sessão
+session_destroy();
+?>
+
+
+PHP com Cookies
+
+
+<?php
+// Criar cookie
+setcookie('nome', 'João', time() + 3600);
+
+// Ler cookie
+if (isset($_COOKIE['nome'])) {
+    echo "Olá, " . $_COOKIE['nome'];
+}
+
+// Apagar cookie
+setcookie('nome', '', time() - 3600);
+?>
+
+
+PHP com Arquivos Upload
+
+
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $arquivo = $_FILES['arquivo'];
+    
+    if ($arquivo['error'] === UPLOAD_ERR_OK) {
+        $nome = $arquivo['name'];
+        $tmp_name = $arquivo['tmp_name'];
+        $destino = 'uploads/' . $nome;
+        
+        if (move_uploaded_file($tmp_name, $destino)) {
+            echo "Arquivo enviado com sucesso!";
+        }
+    }
+}
+?>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="arquivo">
+    <button type="submit">Enviar</button>
+</form>
+
+
+PHP com Validação de Dados
+
+
+
+<?php
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+function validate CPF($cpf) {
+    // Remover formatação
+    $cpf = preg_replace('/[^0-9]/', '', $cpf);
+    
+    // Verificar se tem 11 dígitos
+    if (strlen($cpf) != 11) {
+        return false;
+    }
+    
+    // Verificar se não é sequência de números iguais
+    if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+        return false;
+    }
+    
+    // Validar dígitos verificadores
+    for ($t = 9; $t <= 10; $t++) {
+        for ($c = 0, $s = 0; $c < $t; $c++) {
+            $s += $cpf[$c] * (($t + 1) - $c);
+        }
+        if ($cpf[$t] == ((($s * 10) % 11) % 10)) {
+            continue;
+        }
+        return false;
+    }
+    
+    return true;
+}
+
+// Usar as validações
+if (validateEmail('joao@email.com')) {
+    echo "Email válido";
+}
+
+if (validate CPF('123.456.789-09')) {
+    echo "CPF válido";
+}
+?>
+
+PHP com Paginação
+
+
+<?php
+$itens = range(1, 100); // 100 itens
+$itens_por_pagina = 10;
+ pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina - 1) * $itens_por_pagina;
+
+$itens_mostrados = array_slice($itens, $offset, $itens_por_pagina);
+
+// Gerar links de paginação
+$total_paginas = ceil(count($itens) / $itens_por_pagina);
+
+for ($i = 1; $i <= $total_paginas; $i++) {
+    $classe = $i == $pagina ? 'ativa' : '';
+    echo "<a href='?pagina=$i' class='$classe'>$i</a>";
+}
+?>
+
+
+PHP com Consumo de APIs
+
+
+<?php
+// Consumir API REST
+$url = 'https://api.exemplo.com/dados';
+$opcoes = [
+    'http' => [
+        'method' => 'GET',
+        'header' => "Content-Type: application/json\r\n"
+    ]
+];
+
+$contexto = stream_context_create($opcoes);
+$response = file_get_contents($url, false, $contexto);
+
+if ($response) {
+    $dados = json_decode($response, true);
+    print_r($dados);
+}
+
+// Consumir API com POST
+$url = 'https://api.exemplo.com/dados';
+$dados = ['nome' => 'João', 'email' => 'joao@email.com'];
+$opcoes = [
+    'http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/json\r\n",
+        'content' => json_encode($dados)
+    ]
+];
+
+$contexto = stream_context_create($opcoes);
+$response = file_get_contents($url, false, $contexto);
+?>
+
+
+PHP com Tratamento de Erros Customizado
+
+
+
+<?php
+function customErrorHandler($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) {
+        return;
+    }
+    
+    throw new ErrorException($message, 0, $severity, $file, $line);
+}
+
+set_error_handler("customErrorHandler");
+
+try {
+    // Código que pode gerar erros
+    $division = 1 / 0;
+} catch (ErrorException $e) {
+    echo "Erro capturado: " . $e->getMessage();
+}
+?>
+
+
+PHP com Namespaces
+
+
+<?php
+// Arquivo separado: App/Models/Usuario.php
+namespace App\Models;
+
+class Usuario {
+    public function save() {
+        echo "Salvando usuário";
+    }
+}
+
+// Usando namespace
+use App\Models\Usuario;
+
+$usuario = newUsuario();
+$usuario->save();
+
+// Ou usando namespace completo
+$usuario = new \App\Models\Usuario();
+?>
+
+
+PHP com Composer e PSR-4
+
+
+
+<?php
+// Estrutura de pastas:
+// src/
+//   Models/
+//     Usuario.php
+//   Controllers/
+//     UserController.php
+
+// composer.json
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Models\Usuario;
+use App\Controllers\UserController;
+
+$usuario = newUsuario();
+$userController = new UserController();
+$userController->store($usuario);
+?>
+
+
+Exemplos Práticos
+
+Sistema de Login
+
+
+
+<?php
+session_start();
+
+function autenticar($nome, $senha) {
+    // Buscar usuário no banco
+    $sql = "SELECT id, senha FROM usuarios WHERE nome = '$nome'";
+    $resultado = $pdo->query($sql)->fetch();
+    
+    if ($resultado && password_verify($senha, $resultado['senha'])) {
+        return $resultado['id'];
+    }
+    return false;
+}
+
+if ($_POST['acao'] === 'login') {
+    $nome = $_POST['nome'];
+    $senha = $_POSTsenha];
+    
+    $usuario_id = autenticar($nome, $senha);
+    
+    if ($usuario_id) {
+        $_SESSION['usuario_id'] = $usuario_id;
+        echo "Login realizado com sucesso!";
+    } else {
+        echo "Credenciais inválidas";
+    }
+}
+?>
+
+
+API RESTful
+
+
+<?php
+header('Content-Type: application/json');
+
+$method = $_SERVER['REQUEST_METHOD'];
+$pdo = new PDO("mysql:host=localhost;dbname=app", 'user', 'pass');
+
+switch ($method) {
+    case 'GET':
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $stmt = $pdo->prepare("SELECT * FROM items WHERE id = ?");
+            $stmt->execute([$id]);
+            $item = $stmt->fetch();
+            echo json_encode($item);
+        } else {
+            $stmt = $pdo->query("SELECT * FROM items");
+            $items = $stmt->fetchAll();
+            echo json_encode($items);
+        }
+        break;
+        
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        $stmt = $pdo->prepare("INSERT INTO items (nome) VALUES (?)");
+        $stmt->execute([$data->nome]);
+        echo json_encode(['success' => true]);
+        break;
+        
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+        $stmt = $pdo->prepare("UPDATE items SET nome = ? WHERE id = ?");
+        $stmt->execute([$data->nome, $data->id]);
+        echo json_encode(['success' => true]);
+        break;
+        
+    case 'DELETE':
+        $id = $_GET['id'];
+        $stmt = $pdo->prepare("DELETE FROM items WHERE id = ?");
+        $stmt->execute([$id]);
+        echo json_encode(['success' => true]);
+        break;
+}
+?>
