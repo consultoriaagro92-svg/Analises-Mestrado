@@ -1,0 +1,186 @@
+Aqui está um guia completo dos principais comandos DAX para Power BI:
+
+Funções Básicas
+Agregações
+
+-- Soma
+SomaTotal = SUM(Tabela[Coluna])
+
+-- Contar
+ContarRegistros = COUNT(Tabela[Coluna])
+ContarLinhas = COUNTROWS(Tabela)
+
+-- Média
+Media = AVERAGE(Tabela[Coluna])
+
+-- Mínimo e Máximo
+Minimo = MIN(Tabela[Coluna])
+Maximo = MAX(Tabela[Coluna])
+
+Filtros
+
+-- Filtros com condição
+Filtrados = CALCULATE(SUM(Tabela[Coluna]), Tabela[Coluna] > 100)
+
+-- Filtros múltiplos
+MultiFiltro = CALCULATE(SUM(Tabela[Coluna]), Tabela[Coluna1] = "A", Tabela[Coluna2] = "B")
+
+-- Filtro com ELSE
+Com ELSE = IF(Tabela[Coluna] > 100, "Alto", "Baixo")
+
+Funções de Tempo
+
+-- Data atual
+Hoje = TODAY()
+Agora = NOW()
+
+-- Extrair componentes
+Ano = YEAR(Tabela[Data])
+Mes = MONTH(Tabela[Data])
+Dia = DAY(Tabela[Data])
+
+-- Datas anteriores/seguintes
+Anterior = DATEADD(Tabela[Data], -1, DAY)
+Proximo = DATEADD(Tabela[Data], 1, MONTH)
+
+-- Diferença em dias
+DiasDiff = DATEDIFF(Tabela[Data1], Tabela[Data2], DAY)
+
+Funções Lógicas
+
+-- IF
+Se = IF(Condicao, Verdadeiro, Falso)
+
+-- Switch
+Multiplo = SWITCH(Valor, 1, "Um", 2, "Dois", 3, "Três")
+
+-- AND/OR
+E = AND(Cond1, Cond2)
+Ou = OR(Cond1, Cond2)
+
+-- Operadores
+MaiorQue = Tabela[Coluna] > 100
+Igual = Tabela[Coluna] = "Texto"
+
+Funções de Texto
+
+-- Concatenar
+Concatenar = Tabela[Nome] & " " & Tabela[Sobrenome]
+
+-- Extrair parte
+Esquerda = LEFT(Tabela[Texto], 3)
+Direita = RIGHT(Tabela[Texto], 3)
+SubTexto = MID(Tabela[Texto], 2, 5)
+
+-- Substituir
+Substituir = REPLACE(Tabela[Texto], 1, 3, "XXX")
+
+-- Comprimento
+Comprimento = LEN(Tabela[Texto])
+
+Funções de Matemática
+
+-- Arredondamento
+Arredondar = ROUND(Valor, 2)
+Inteiro = INT(Valor)
+Raiz = SQRT(Valor)
+
+-- Módulo
+Resto = MOD(10, 3)
+
+-- Potência
+Potencia = POWER(2, 3)
+
+-- Trigonométricas
+Seno = SIN(Angulo)
+Cosseno = COS(Angulo)
+
+Funções Especiais
+
+-- CALCULATE (essencial)
+TotalFiltrado = CALCULATE(SUM(Tabela[Coluna]), Filtro)
+
+-- CALCULATE com REMOVEFILTERS
+SemFiltro = CALCULATE(SUM(Tabela[Coluna]), REMOVEFILTERS(Tabela))
+
+-- CALCULATE com ALL
+SemFiltroTudo = CALCULATE(SUM(Tabela[Coluna]), ALL(Tabela))
+
+-- CALCULATE com KEEPFILTERs
+ComFiltro = CALCULATE(SUM(Tabela[Coluna]), KEEPFILTERs(Tabela[Coluna] > 100))
+
+-- CALCULATE com VALUES
+ValorUnico = CALCULATE(SUM(Tabela[Coluna]), Tabela[Coluna] = VALUES(Tabela[Coluna]))
+
+Medidas de Tempo (Time Intelligence)
+
+-- Total no período
+TotalPeriodo = TOTALYTD(SUM(Tabela[Vendas]), Tabela[Data])
+
+-- Comparação com período anterior
+Anterior = CALCULATE(SUM(Tabela[Vendas]), DATEADD(Tabela[Data], -1, MONTH))
+
+-- Crescimento
+Crescimento = DIVIDE(TotalPeriodo - Anterior, Anterior)
+
+-- Mesmo período ano anterior
+MesmoAnoAnterior = CALCULATE(SUM(Tabela[Vendas]), SAMEPERIODLASTYEAR(Tabela[Data]))
+
+-- Média móvel
+MediaMovel = CALCULATE(AVERAGE(Tabela[Vendas]), DATESINPERIOD(Tabela[Data], LASTDATE(Tabela[Data]), -7, DAY))
+
+Funções de Tabela
+
+-- Criar tabela
+MinhaTabela = SUMMARIZE(Tabela, Tabela[Coluna], "NovaColuna", SUM(Tabela[Valor]))
+
+-- Filtrar tabela
+TabelaFiltrada = FILTER(Tabela, Tabela[Coluna] > 100)
+
+-- Selecionar colunas
+Selecionadas = SELECTCOLUMNS(Tabela, "Nome", Tabela[Nome], "Valor", Tabela[Valor])
+
+-- Agrupar
+Agrupado = GROUPBY(Tabela, Tabela[Grupo], "Total", SUMX(CURRENTGROUP(), Tabela[Valor]))
+
+Funções de Iteração
+
+-- SUMX
+SomaIterada = SUMX(Tabela, Tabela[Preco] * Tabela[Quantidade])
+
+-- CONCATENATEX
+Lista = CONCATENATEX(Tabela, Tabela[Texto], ", ")
+
+-- MAXX
+MaxIterado = MAXX(Tabela, Tabela[Preco] * Tabela[Quantidade])
+
+Medidas Especiais
+
+-- Contar distinct
+ProdutosDistintos = DISTINCTCOUNT(Tabela[Produtos])
+
+-- Primeiro/Último valor
+Primeiro = FIRSTVALUE(Tabela[Coluna])
+Ultimo = LASTVALUE(Tabela[Coluna])
+
+-- Rank
+Posicao = RANKX(Tabela, Tabela[Valor])
+
+-- Porcentagem
+Porcento = DIVIDE(SUM(Tabela[Vendas]), CALCULATE(SUM(Tabela[Vendas]), ALL(Tabela)))
+
+-- Medida de Vendas Totais
+VendasTotais = SUM(Vendas[Valor])
+
+-- Vendas no ano atual
+VendasAno = CALCULATE([VendasTotais], FILTER(ALL(Data), Data[Ano] = MAX(Data[Ano])))
+
+-- Comparação com ano anterior
+VendasAnterior = CALCULATE([VendasTotais], DATEADD(Data[Data], -1, YEAR))
+
+-- Variação percentual
+Variacao = DIVIDE([VendasAno] - [VendasAnterior], [VendasAnterior])
+
+-- Vendas por produto
+VendasPorProduto = CALCULATE([VendasTotais], VALUES(Produtos[Nome]))
+
