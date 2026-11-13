@@ -1,0 +1,447 @@
+Funções Básicas
+
+Matemáticas
+
+-- Soma
+=SOMA(A1:A10)
+=SOMA(A1;A2;A3)
+
+-- Subtração
+=A1-A2
+
+-- Multiplicação
+=A1*A2
+
+-- Divisão
+=A1/A2
+
+-- Potência
+= POTENCIA(2;3)
+=2^3
+
+-- Raiz Quadrada
+=RAIZ(16)
+
+-- Arredondamento
+=ARREDONDA(3,14159;2)
+=ARREDONDA(3,14159;0)
+
+-- Módulo (resto da divisão)
+=MOD(10;3)
+
+-- Absoluto
+=ABS(-10)
+
+-- Máximo e Mínimo
+=MAX(A1:A10)
+=MIN(A1:A10)
+
+Lógicas
+
+-- SE
+=SE(A1>10;"Alto";"Baixo")
+=SE(E(A1>10;A2>5);"Alto";"Médio")
+
+-- E (AND)
+=E(A1>10;A2>5)
+
+-- OU (OR)
+=OU(A1>10;A2>5)
+
+-- NÃO (NOT)
+=NÃO(A1>10)
+
+-- SE MÚLTIPLAS CONDIÇÕES
+=SE(A1="Sim";"Aprovado";SE(A1="Não";"Reprovado";"Pendente"))
+
+-- ESCOLHA (Switch)
+=ESCOLHA(A1;1;"Um";2;"Dois";3;"Três")
+
+Texto
+
+-- Concatenar
+=A1&" "&B1
+=CONCATENAR(A1;" ";B1)
+
+-- Comprimento do texto
+=COMP(A1)
+
+-- Maiúscula/Minúscula
+=MAIUSCULA(A1)
+=MINUSCULA(A1)
+
+-- Extrair parte
+=ESQUERDA(A1;3)
+=DIREITA(A1;3)
+=EXTRAIR(A1;2;5)
+
+-- Substituir
+=SUBSTITUIR(A1;" João ";" Maria")
+
+-- Procurar texto
+=PROCURAR(" João ";A1)
+
+-- Remover espaços
+=ESPACOS(A1)
+=ESPACOS.ESQUERDA(A1)
+=ESPACOS.DIREITA(A1)
+
+Data e Hora
+
+-- Data atual
+=HOJE()
+=AGORA()
+
+-- Extrair componentes
+=ANO(A1)
+=MÊS(A1)
+=DIA(A1)
+
+-- Somar/subtrair tempo
+=A1+1
+=A1-1
+
+-- Diferença entre datas
+=DIFERENÇA.DIAS(A1;B1)
+=DIFERENÇA.MESES(A1;B1)
+=DIFERENÇA.ANOS(A1;B1)
+
+-- Data formatada
+=TEXTO(A1;"dd/mm/yyyy")
+=TEXTO(A1;"hh:mm:ss")
+
+Busca e Referência
+
+-- Procurar valor
+=PROCURAR Vertical("João";A1:A100;1)
+
+-- Procurar valor (horizontal)
+=PROCURAR Horizontal("João";A1:J1;1)
+
+-- Índice e correspondência
+=ÍNDICE(A1:J10;3;2)
+=PROCV("João";A1:J100;2;FALSO)
+=PROCV("João";A1:J100;2;VERDADEIRO)
+
+-- Offset
+=OFFSET(A1;0;0;5;3)
+
+
+Funções Estatísticas
+
+
+Estatísticas Básicas
+
+-- Contar
+=CONTAR.NÚMERO(A1:A100)
+=CONTAR.VALORES(A1:A100)
+
+-- Soma
+=SOMA(A1:A100)
+
+-- Média
+=MÉDIA(A1:A100)
+
+-- Mediana
+=MEDIANA(A1:A100)
+
+-- Moda
+=MODO(A1:A100)
+
+-- Desvio padrão
+=DESV.PADRÃO(A1:A100)
+=DESV.PADRÃO.P(A1:A100)
+
+-- Variância
+=VAR(A1:A100)
+=VAR.P(A1:A100)
+
+Estatísticas Avançadas
+
+-- Quartis
+=QUARTIL(A1:A100;1)
+=QUARTIL(A1:A100;2)
+=QUARTIL(A1:A100;3)
+=QUARTIL(A1:A100;4)
+
+-- Percentis
+=PERCENTIL(A1:A100;0,25)
+=PERCENTIL.EXC(A1:A100;0,25)
+
+-- Desvio médio absoluto
+=DESvio.MÉDIO.ABSOLUTO(A1:A100)
+
+-- Assimetria
+=ASSIMETRIA(A1:A100)
+
+-- Curtose
+=CURTOSE(A1:A100)
+
+Funções de Tabela
+
+
+Tabela Dinâmica
+
+-- Criar tabela dinâmica
+=TABELA.DINÂMICA(Dados!A1:F100;Produtos;Soma;Vendas)
+
+-- Atualizar tabela dinâmica
+=ATUALIZAR.TABELA.DINÂMICA("MinhaTabelaDinâmica")
+
+-- Obter valor da tabela dinâmica
+=GETPIVOTDATA("Soma de Vendas";TabelaDinâmica1;"Região";"São Paulo")
+
+Funções de Tabela
+
+
+-- Procurar em tabela
+=PROCURAR Vertical("João";Tabela1;2;FALSO)
+
+-- Procurar approximate
+=PROCURAR Vertical(100;Tabela1;2;VERDADEIRO)
+
+-- Procurar em matriz
+=XLOOKUP("João";A1:A100;B1:B100)
+=XLOOKUP("João";A1:A100;B1:B100;;0;-1)
+
+Funções Financeiras
+
+Juros e Investimentos
+
+-- Juros compostos
+=FUTuro(0,1;1000;100;-1000)
+=FV(0,1;1000;100;-1000)
+
+-- Juros periódicos
+=TAXA(0,1;1000;100;-1000)
+=RATE(100;1000;100;-1000)
+
+-- Valor Presente
+=VP(0,1;1000;100;-1000)
+=PV(0,1;1000;100;-1000)
+
+-- Pagamentos
+=PMT(0,1;1000;100;-1000)
+=PMT(0,1;1000;100;-1000)
+
+-- Número de períodos
+=NÚM.PERÍODOS(0,1;1000;100;-1000)
+=NPER(0,1;1000;100;-1000)
+
+-- Valor líquido atual
+=VLJ(0,1;1000;100;-1000)
+=NPV(0,1;1000;100;-1000)
+
+-- Taxa interna de retorno
+=TIR(A1:A10)
+=IRR(A1:A10)
+
+Depreciação
+
+-- Depreciação linear
+=DEPRECIAÇÃO.LIN(A1;B1;C1)
+=SLN(A1;B1;C1)
+
+-- Depreciação Dobrada
+=DEPRECIAÇÃO.DOBRADA.BALANÇO(A1;B1;C1)
+=DDB(A1;B1;C1)
+
+-- Depreciação por Unidades
+=DEPRECIAÇÃO.UNIDADES(A1;B1;C1;D1)
+=SYD(A1;B1;C1;D1)
+
+Funções de Busca Avançada
+
+Busca com Critérios
+
+-- SOMAR SE
+=SOMASE(A1:A100;"João";B1:B100)
+=SOMASE(A1:A100;"João";B1:B100)
+
+-- CONTAR SE
+=CONTAR.SE(A1:A100;"João")
+=CONTAR.SE(A1:A100;"João";B1:B100)
+
+-- MÉDIA SE
+=MÉDIA.SE(A1:A100;"João";B1:B100)
+
+-- MÁXIMO SE
+=MÁXIMO.SE(A1:A100;"João";B1:B100)
+
+-- MÍNIMO SE
+=MÍNIMO.SE(A1:A100;"João";B1:B100)
+
+-- SOMAR SE com múltiplas condições
+=SOMASES(A1:A100;"João";B1:B100;C1:C100;100)
+=SOMIFS(A1:A100;"João";B1:B100;100;C1:C100;"Ativo")
+
+Busca com Expressões
+
+-- Buscar valor com expressão
+=PROCURAR Vertical("*João*";A1:A100;1;FALSO)
+
+-- Buscar valor aproximado
+=PROCURAR Vertical(100;A1:A100;1;VERDADEIRO)
+
+-- Buscar valor exato
+=PROCURAR Vertical("João";A1:A100;1;FALSO)
+
+-- Buscar em múltiplas colunas
+=XLOOKUP("João";A1:A100;B1:B100;;0;-1)
+
+Funções de Texto Avançadas
+
+-- Extrair número do texto
+=EXTRAIR.NÚMERO(A1)
+
+-- Encontrar posição
+=PROCURAR(" João ";A1)
+
+-- Substituir texto
+=SUBSTITUIR(A1;" João ";" Maria")
+
+-- Dividir texto
+=TEXTO.DIVIDIR(A1;" ")
+
+-- Juntar texto
+=TEXTO.JUNTAR(";";A1:A10)
+
+-- Formatar texto
+=TEXTO(A1;"@")
+=TEXTO(A1;"0,00")
+
+-- Data e hora atual
+=AGORA()
+=HOJE()
+
+-- Somar tempo
+=A1+TEMPO(1;0;0;0)  -- 1 dia
+
+-- Diferença entre datas
+=DIFERENÇA.DIAS(A1;B1)
+=DIFERENÇA.MESES(A1;B1)
+=DIFERENÇA.ANOS(A1;B1)
+
+-- Data formatada
+=TEXTO(A1;"dd/mm/yyyy")
+=TEXTO(A1;"hh:mm:ss")
+
+-- Data de amanhã
+=HOJE()+1
+
+Funções de Matemática Avançadas
+
+-- Estatísticas
+=MÉDIA(A1:A100)
+=MEDIANA(A1:A100)
+=MODA(A1:A100)
+
+-- Probabilidade
+=DISTRIBUIÇÃO.NORMAL(100;15;90;FALSO)
+=DISTRIBUIÇÃO.NORMAL(100;15;90;VERDADEIRO)
+
+-- Probabilidade binomial
+=DISTRIBUIÇÃO.BINOMIAL(10;0,5;5;FALSO)
+
+-- Probabilidade Poisson
+=DISTRIBUIÇÃO.POISSON(5;3;FALSO)
+
+-- Estatísticas de amostra
+=DESV.PADRÃO(A1:A100)
+=DESV.PADRÃO.P(A1:A100)
+=VAR(A1:A100)
+=VAR.P(A1:A100)
+
+Exemplos Práticos
+1. Sistema de Notas
+
+-- Nota final
+=(A1*0,4)+(B1*0,3)+(C1*0,3)
+
+-- Status do aluno
+=SE(A1>=7;"Aprovado";SE(A1>=5;"Recuperação";"Reprovado"))
+
+-- Média da turma
+=MÉDIA(A1:A50)
+
+-- Aprovados
+=CONTAR.SE(A1:A50;">=7")
+
+2. Sistema de Vendas
+
+-- Preço com desconto
+=B1*(1-C1)
+
+-- Total da venda
+=SOMA(D1:D10)
+
+-- Vendas por vendedor
+=SOMASE(Vendedores;"João";Vendas)
+
+-- Melhor vendedor
+=MÁXIMO.SE(Vendedores;"João";Vendas)
+
+Sistema Financeiro
+
+-- Juros compostos
+=FV(0,1;1000;100;-1000)
+
+-- Valor presente
+=PV(0,1;1000;100;-1000)
+
+-- Taxa de retorno
+=TIR(A1:A10)
+
+-- Custo médio
+=MÉDIA.SE(Custos;"<100")
+
+4. Sistema de Estoque
+
+-- Estoque atual
+=SOMA(Entradas)-SOMA(Saídas)
+
+-- Valor do estoque
+=SOMA(PRODUTO(Estoq;Preços))
+
+-- Estoque baixo
+=CONTAR.SE(Estoq;"<10")
+
+-- Preço médio
+=MÉDIA.SE(Preços;"<100")
+
+5. Sistema de RH
+
+-- Idade
+=DIFERENÇA.ANOS(A1;HOJE())
+
+-- Tempo de empresa
+=DIFERENÇA.ANOS(A1;HOJE())
+
+-- Salário médio por departamento
+=MÉDIA.SE(Departamento;"Vendas";Salários)
+
+-- Funcionários por departamento
+=CONTAR.SE(Departamento;"Vendas")
+
+Funções de Tabela Dinâmica Avançadas
+
+-- Criar tabela dinâmica
+=TABELA.DINÂMICA(Dados!A1:F100;Produtos;Soma;Vendas)
+
+-- Atualizar tabela dinâmica
+=ATUALIZAR.TABELA.DINÂMICA("MinhaTabelaDinâmica")
+
+-- Obter valor da tabela dinâmica
+=GETPIVOTDATA("Soma de Vendas";TabelaDinâmica1;"Região";"São Paulo")
+
+Funções de Busca com Tabelas
+
+-- Procurar em tabela
+=PROCURAR Vertical("João";Tabela1;2;FALSO)
+
+-- Procurar approximate
+=PROCURAR Vertical(100;Tabela1;2;VERDADEIRO)
+
+-- Procurar em matriz
+=XLOOKUP("João";A1:A100;B1:B100)
+=XLOOKUP("João";A1:A100;B1:B100;;0;-1)
